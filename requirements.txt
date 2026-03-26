@@ -1,0 +1,65 @@
+# AutoApply Agent Requirements
+# Python 3.10+ required
+
+# Core dependencies
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pandas>=2.0.0
+aiofiles>=23.0.0
+
+# Telegram
+telethon>=1.30.0
+
+# AI/ML
+google-generativeai>=0.3.0
+
+# Web automation
+playwright>=1.40.0
+
+# PDF generation
+reportlab>=4.0.0
+markdown>=3.5.0
+
+# Web scraping and HTTP
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==5.1.0
+httpx==0.26.0
+weasyprint
+
+# Email
+smtplib-ssl==1.0.4
+
+# Data processing
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# Logging and utilities
+colorlog==6.8.0
+tqdm==4.66.1
+click==8.1.7
+
+# Development dependencies (optional)
+pytest==8.0.0
+pytest-asyncio==0.23.4
+black==24.1.1
+flake8==7.0.0
+mypy==1.8.0
+bs4
+
+# Additional utilities
+python-dateutil==2.8.2
+pathlib2==2.3.7
+typing-extensions==4.9.0
+
+
+langchain
+langchain-core
+langchain-google-genai
+pydantic
+google-generativeai
+langchain-groq
+langchain-community
+langchain-classic
+langchain-ollama
+

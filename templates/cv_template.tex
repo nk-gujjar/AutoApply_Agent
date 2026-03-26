@@ -1,0 +1,235 @@
+%-------------------------
+% Resume in Latex
+% Author : Nitesh Kumar
+%------------------------
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{ragged2e}
+% \usepackage[empty]{fullpage}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+% \usepackage{fancyhdr}
+% \usepackage{multicol}
+% \usepackage{graphicx}
+% \usepackage{cfr-lm}
+\usepackage[T1]{fontenc}
+% \newcommand{\resumePOR}[1]{\textbf{#1}}
+% \pagestyle{fancy}
+% \fancyhf{}
+% \renewcommand{\headrulewidth}{0pt}
+
+\geometry{left=0.6cm, top=0.5cm, right=0.6cm, bottom=0.5cm}
+
+\titleformat{\section}
+{\vspace{-4pt}\scshape\raggedright\large}
+{}{0em}{}[\titlerule \vspace{-7pt}]
+
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+%----------CUSTOM COMMANDS----------
+
+\newcommand{\resumeSubheading}[4]{
+\vspace{0.5mm}\item
+\begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+\textbf{#1} & \textit{\footnotesize{#4}} \\
+\textit{\footnotesize{#3}} &  \footnotesize{#2}\\
+\end{tabular*}
+\vspace{-2.4mm}
+}
+
+\newcommand{\resumePOR}[3]{
+\vspace{0.5mm}\item
+\begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+\textbf{#1},\hspace{0.3mm}#2 & \textit{\small{#3}}
+\end{tabular*}
+\vspace{-2mm}
+}
+
+\newcommand{\resumeProject}[4]{
+\vspace{0.5mm}\item
+\begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+\textbf{#1} & \textit{\footnotesize{#3}} \\
+\footnotesize{\textit{#2}} & \footnotesize{#4}
+\end{tabular*}
+\vspace{-2.4mm}
+}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,labelsep=0mm]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=3ex, noitemsep]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-2mm}}
+
+%-----------------------------------
+
+\begin{document}
+
+%----------HEADER----------
+
+\begin{center}
+{\LARGE \textbf{Nitesh Kumar}}\\
++91-8769443433 \\
+\href{mailto:1niteshgurjar3433@gmail.com}{1niteshgurjar3433@gmail.com} $|$
+\href{https://github.com/nk-gujjar}{GitHub} $|$
+\href{https://leetcode.com/u/nitesh_kumar26/}{LeetCode} $|$
+\href{https://codeforces.com/profile/Mr.BruceWayne}{Codeforces} $|$
+\href{https://www.linkedin.com/in/nitesh-kumar-gurjar/}{LinkedIn}
+\end{center}
+
+\vspace{-3mm}
+
+%-----------EDUCATION-----------
+
+\section{\textbf{Education}}
+
+\small{
+\begin{tabularx}{\textwidth}{|c|X|c|c|}
+\hline
+\textbf{Degree} & \textbf{Institute/Board} & \textbf{CGPA/Percentage} & \textbf{Year} \\
+\hline
+Bachelor of Technology & Indian Institute of Technology, Ropar & 6.73 & 2021-2025 \\
+\hline
+Senior Secondary & Central Board of Secondary Education & 97\% & 2021 \\
+\hline
+Secondary & Central Board of Secondary Education & 95\% & 2019 \\
+\hline
+\end{tabularx}
+}
+
+\vspace{-3mm}
+
+%-----------EXPERIENCE-----------
+
+\section{\textbf{Experience}}
+
+\resumeSubHeadingListStart
+
+\resumeSubheading
+{Infosys}{}
+{Specialist Programmer (Agentic AI)}{Oct. 2025 - Present}
+
+\resumeItemListStart
+\item {Completed advanced training in \textbf{Agentic AI systems} using \textbf{LangChain, LangGraph, MCP and A2A frameworks}.}
+\item {Built \textbf{multi-agent workflows} and \textbf{RAG pipelines} for document processing and knowledge retrieval.}
+\item {Developed backend APIs using \textbf{FastAPI} to support scalable AI-driven applications.}
+\item {Integrated \textbf{Langfuse observability} and \textbf{Guardrails} to monitor and validate \textbf{LLM responses}.}
+\resumeItemListEnd
+
+\vspace{-1mm}
+
+\resumeSubheading
+{Annam.ai }{}
+{AI Research Intern}{July 2025 - Oct. 2025}
+
+\resumeItemListStart
+\item {Built deep learning models to identify plant species and estimate growth stages from images.}
+\item {Used computer vision techniques for plant health monitoring and feature extraction.}
+\resumeItemListEnd
+
+\vspace{-1mm}
+
+\resumeSubheading
+{Easecruit }{}
+{Software Developer Intern}{May 2024 - June 2024}
+
+\resumeItemListStart
+\item {Developed a resume parser using Node.js and React converting resumes into structured JSON.}
+\item {Integrated LLMs to extract GitHub links, repositories and candidate metadata.}
+\item {Optimized backend pipeline to process 100+ resumes in under 15 seconds.}
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\vspace{-6mm}
+
+%-----------PROJECTS-----------
+
+\section{\textbf{Projects}}
+
+{{PROJECTS}}
+% \resumeProject
+% {AI Invoice Auditor}
+% {\textbf{LangChain, LangGraph, MCP, A2A, FastAPI}}
+% {2025}
+% % {\href{https://github.com/nk-gujjar}{\textbf{Github}}}
+
+% \resumeItemListStart
+% \item {Built a \textbf{multi-agent AI system} for automated invoice auditing and validation.}
+% \item {Implemented \textbf{translation, extraction and validation agents} for invoice processing.}
+% \item {Integrated \textbf{RAG retrieval with FAISS} and monitoring via \textbf{Langfuse}.}
+% \resumeItemListEnd
+
+% \resumeProject
+% {Buffalo Recognition \& Re-Identification}
+% {\textbf{Python, TensorFlow, Keras, Neural Networks}}
+% {Sept. 2024 - April 2025}
+% {\href{https://github.com/nk-gujjar/Buffalo-re-identification}{\textbf{Github}}}
+
+% \resumeItemListStart
+% \item {Designed an \textbf{autoencoder-based deep learning model} for buffalo identification using muzzle images.}
+% \item {Implemented \textbf{feature extraction} and \textbf{similarity matching} for re-identification.}
+% \resumeItemListEnd
+
+% \resumeProject
+% {Quick Event}
+% {\textbf{Python, NLP, LLaMA-2, Google Calendar API}}
+% {Jan. 2024 - March 2024}
+% {\href{https://github.com/nk-gujjar/Chatbot}{\textbf{Github}}}
+
+% \resumeItemListStart
+% \item {Developed a \textbf{conversational AI chatbot} for scheduling events through natural language.}
+% \item {Integrated \textbf{Google Calendar API} to automate meeting creation and reminders.}
+% \resumeItemListEnd
+
+
+\vspace{-6mm}
+
+%-----------TECHNICAL SKILLS-----------
+
+\section{\textbf{Technical Skills}}
+{{SKILLS}}
+% \begin{itemize}[leftmargin=*, noitemsep]
+% \item \textbf{Programming:} Python, C/C++, SQL, JavaScript
+% \item \textbf{Agentic AI / Gen. AI:} LangChain, LangGraph, MCP, A2A, RAG, Guardrails, Langfuse
+% \item \textbf{Frameworks:} FastAPI, React.js, Node.js
+% \item \textbf{Machine Learning:} TensorFlow, PyTorch, Keras, OpenCV
+% \item \textbf{Tools:} Git, GitHub, Linux, VS Code, Jupyter Notebook
+% \end{itemize}
+
+\vspace{-4mm}
+
+%-----------POSITIONS-----------
+
+\section{\textbf{Positions of Responsibility}}
+\vspace{-0.4mm}
+
+\resumeSubHeadingListStart
+
+\resumePOR{Secretary}{Outdoor Adventure Club, IIT Ropar}{Oct. 2024 -- May 2025}
+
+\resumePOR{Head Organizer for 5km and 11km Marathon}{Outdoor Adventure Club, IIT Ropar}{Sept. 2024 -- Oct. 2024}
+
+\resumePOR{Team Lead}{Techno-Cultural Fest, Hospitality Team, IIT Ropar}{Feb. 2023 -- March 2023}
+
+\resumeSubHeadingListEnd
+\vspace{-4mm}
+
+%-----------ACHIEVEMENTS-----------
+
+\section{\textbf{Achievements}}
+
+\begin{itemize}[leftmargin=*, noitemsep]
+\item \textbf{Codeforces Specialist} | Handle: \href{https://codeforces.com/profile/Mr.BruceWayne}{\textbf{Mr.BruceWayne}}
+\item Ranked in \textbf{Top 0.5\%} in \textbf{JEE Mains and Advanced}
+\item \textbf{UPSC NDA} – Qualified for \textbf{SSB Interview}
+\item \textbf{Quarter Finalist} – \textbf{Inter IIT Sports Meet}
+\end{itemize}
+
+\end{document}

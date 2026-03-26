@@ -1,0 +1,47 @@
+# Environment and secrets
+.env
+.env.*
+personal.txt
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS/editor files
+.DS_Store
+.vscode/
+
+# Project runtime artifacts
+logs/
+output/
+*.log
+data/*.log
+data/*.tmp
+data/*.bak
+data/*.png
+autoapply_session.session
+
+# Keep important data snapshots out of git
+data/application_log.txt
+data/cv_metadata.json
+data/applied_jobs.txt
+data/external_applied.txt
+data/external_failed.txt
+data/naukri_jobs.txt
+data/skipped_jobs.txt

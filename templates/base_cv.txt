@@ -1,0 +1,46 @@
+Nitesh Kumar
++91-8769443433
+1niteshgurjar3433@gmail.com | GitHub | LeetCode | Codeforces | LinkedIn
+
+Education
+Degree Institute/Board CGPA/Percentage Year
+Bachelor of Technology Indian Institute of Technology, Ropar 6.73 2021-2025
+Senior Secondary Central Board of Secondary Education 97% 2021
+Secondary Central Board of Secondary Education 95% 2019
+
+Experience
+
+• Infosys Oct. 2025 - Present
+Specialist Programmer (Agentic AI)
+–Completed advanced training in Agentic AI systems using LangChain, LangGraph, MCP and A2A frameworks.
+–Built multi-agent workflows and RAG pipelines for document processing and knowledge retrieval.
+–Developed backend APIs using FastAPI to support scalable AI-driven applications.
+–Integrated Langfuse observability and Guardrails to monitor and validate LLM responses.
+
+• Annam.ai July 2025 - Oct. 2025
+AI Research Intern
+–Built deep learning models to identify plant species and estimate growth stages from images.
+–Used computer vision techniques for plant health monitoring and feature extraction.
+
+• Easecruit May 2024 - June 2024
+Software Developer Intern
+–Developed a resume parser using Node.js and React converting resumes into structured JSON.
+–Integrated LLMs to extract GitHub links, repositories and candidate metadata.
+–Optimized backend pipeline to process 100+ resumes in under 15 seconds.
+
+Projects
+{PROJECTS}
+
+Technical Skills
+{SKILLS}
+
+Positions of Responsibility
+• Secretary,Outdoor Adventure Club, IIT Ropar Oct. 2024 – May 2025
+• Head Organizer for 5km and 11km Marathon,Outdoor Adventure Club, IIT Ropar Sept. 2024 – Oct. 2024
+• Team Lead,Techno-Cultural Fest, Hospitality Team, IIT Ropar Feb. 2023 – March 2023
+
+Achievements
+• Codeforces Specialist | Handle: Mr.BruceWayne
+• Ranked in Top 0.5% in JEE Mains and Advanced
+• UPSC NDA – Qualified for SSB Interview
+• Quarter Finalist – Inter IIT Sports Meet
