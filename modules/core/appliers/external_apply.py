@@ -10,8 +10,8 @@ from playwright.async_api import async_playwright, TimeoutError as PlaywrightTim
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from config import config, create_llm
-from fillForm import FormFiller
+from modules.core.config.settings import config, create_llm
+from modules.core.forms.fill_form import FormFiller
 
 # Setup logging to both file and console
 logging.basicConfig(

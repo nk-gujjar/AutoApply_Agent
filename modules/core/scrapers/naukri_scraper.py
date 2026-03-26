@@ -34,7 +34,7 @@ from bs4 import BeautifulSoup
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from config import config, create_llm
+from modules.core.config.settings import config, create_llm
 
 logging.basicConfig(
     level=logging.INFO,

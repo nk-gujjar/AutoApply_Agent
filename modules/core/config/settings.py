@@ -11,14 +11,14 @@ import logging
 from langchain_groq import ChatGroq
 from langchain_ollama import ChatOllama
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from repository root .env file
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 class Config:
     """Configuration class for the AutoApply Agent"""
     
     # Base paths
-    BASE_DIR = Path(__file__).resolve().parent
+    BASE_DIR = Path(__file__).resolve().parents[3]
     DATA_DIR = BASE_DIR / "data"
     LOGS_DIR = BASE_DIR / "logs"
     OUTPUT_DIR = BASE_DIR / "output"

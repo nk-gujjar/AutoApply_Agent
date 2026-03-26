@@ -1,257 +1,196 @@
-# AutoApply Agent
+# AutoApply Multi-Agent System (A2A)
 
-A Python-based autonomous job application agent that scrapes Telegram channels for job postings, filters by criteria, generates tailored CVs, and automates the application process.
+This project is organized as a multi-agent system where a **client agent** receives a user query, communicates with specialized agents, uses tools/MCP when needed, and returns a single response.
 
-## Features
+## 📚 Documentation
 
-- 🔍 **Telegram Job Scraping**: Monitors Telegram channels for job postings using Telethon
-- 🤖 **AI-Powered Processing**: Uses Google Gemini to parse unstructured job descriptions
-- 📄 **Dynamic CV Generation**: Creates tailored CVs for each job application
-- 🚀 **Web Automation**: Automates applications on job portals (Workday, Naukri, etc.) using Playwright
-- 📧 **Email Applications**: Sends applications via email when required
-- 👤 **Human-in-the-Loop**: Prompts for missing profile information when needed
-- 📊 **Application Tracking**: Maintains detailed records of all applications
+All documentation is organized in the [`docs/`](docs/) folder. [**Start here →**](docs/START_HERE.md)
 
-## Quick Start
+**Quick Links:**
+- 🚀 [Quick Start Guide](docs/QUICK_START_LLM.md)
+- 🏗️ [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
+- 🧠 [LLM Intelligent Routing](docs/LLM_INTELLIGENT_ROUTING.md)
+- 📖 [Full Documentation Index](docs/DOCUMENTATION_INDEX.md)
 
-1. **Clone and Setup**:
-   ```bash
-   git clone <repository-url>
-   cd AutoApply_Agent
-   pip install -r requirements.txt
-   ```
+## Agents
 
-2. **Configure Environment**:
-   - Copy `.env.example` to `.env` and fill in your API keys:
-     - Telegram API ID and Hash (get from https://my.telegram.org)
-     - Google Gemini API Key (get from https://ai.google.dev)
-     - Email credentials (optional, for email applications)
+- `naukri_scraper` → Scrapes Naukri jobs (`modules/core/scrapers/naukri_scraper.py`)
+- `fetch_jobs` → Streams and filters jobs (`modules/core/scrapers/fetch_job.py`)
+- `resume_rewrite` → Generates tailored resumes/CVs (`modules/core/cv/cv_engine.py`)
+- `naukri_applier` → Applies on Naukri (`modules/core/appliers/naukri_applier.py`)
+- `external_applier` → Applies on external company sites (`modules/core/appliers/external_apply.py`)
 
-3. **Update Personal Profile**:
-   - Edit `personal.txt` with your information
-   - Or run `python main.py --mode update-profile` for interactive setup
+The client orchestrator is in `modules/multi_agent/client_agent.py` and entrypoint is `main.py`.
+Core implementations are organized under `modules/core/*`.
 
-4. **Run the Agent**:
-   ```bash
-   # Batch mode - search and apply to jobs from last 7 days
-   python main.py --mode batch --days 7
-   
-   # Monitor mode - continuous monitoring for new jobs
-   python main.py --mode monitor
-   
-   # View statistics
-   python main.py --mode stats
-   ```
+## A2A Communication Flow
+
+1. User sends a query to `ClientAgent`
+2. `ClientAgent` creates an A2A message with `correlation_id`
+3. `A2ACoordinator` routes messages to one or more agents
+4. Agents execute tasks and return structured results
+5. Client agent aggregates agent/tool outputs and returns one final response
+
+Core A2A files:
+- `modules/multi_agent/a2a.py`
+- `modules/multi_agent/client_agent.py`
+- `modules/multi_agent/models.py`
 
 ## Project Structure
 
-```
+```text
 AutoApply_Agent/
-├── main.py              # Main orchestrator
-├── config.py            # Configuration management
-├── scraper.py           # Telegram scraping
-├── processor.py         # AI job processing
-├── cv_engine.py         # CV generation
-├── automator.py         # Web/email automation
-├── human_loop.py        # User interaction handling
-├── tracker.py           # Application tracking
-├── personal.txt         # Your profile information
-├── .env                 # Environment variables
-├── requirements.txt     # Python dependencies
-├── data/                # Generated data files
-├── logs/                # Application logs
-├── output/              # Generated CVs and reports
-└── templates/           # CV templates
+├── main.py
+├── modules/
+│   └── core/
+│       ├── config/settings.py
+│       ├── scrapers/
+│       │   ├── naukri_scraper.py
+│       │   └── fetch_job.py
+│       ├── appliers/
+│       │   ├── naukri_applier.py
+│       │   └── external_apply.py
+│       ├── cv/cv_engine.py
+│       ├── forms/fill_form.py
+│       └── profile/human_loop.py
+│
+│   └── multi_agent/
+│       ├── a2a.py
+│       ├── client_agent.py
+│       ├── agents/
+│       ├── mcp/
+│       └── tools/
+├── data/
+├── output/
+├── logs/
+└── requirements.txt
 ```
 
-## Core Modules
+## Setup
 
-### 1. Scraper (`scraper.py`)
-- Monitors Telegram channels using Telethon
-- Filters messages based on job keywords, experience, and CTC criteria
-- Supports both batch scraping and real-time monitoring
+1. Create/activate virtual environment
+2. Install dependencies:
 
-### 2. Processor (`processor.py`)
-- Uses Google Gemini to parse unstructured job descriptions
-- Converts text into structured JSON format
-- Validates and filters jobs based on user criteria
-
-### 3. CV Engine (`cv_engine.py`)
-- Generates tailored CVs using AI based on job requirements
-- Converts CV content to PDF format
-- Maintains CV generation history and metadata
-
-### 4. Automator (`automator.py`)
-- Handles web-based applications using Playwright
-- Supports major job portals (Workday, Naukri, LinkedIn)
-- Sends email applications when required
-- Includes anti-detection measures for web scraping
-
-### 5. Human Loop (`human_loop.py`)
-- Manages user profile validation
-- Prompts for missing information when needed
-- Uses Pydantic models for data validation
-
-### 6. Tracker (`tracker.py`)
-- Maintains application history in CSV, JSON, and TXT formats
-- Provides statistics and reporting
-- Tracks application status and responses
-
-## Configuration
-
-### Environment Variables (.env)
 ```bash
-# Telegram API
-TELEGRAM_API_ID=your_api_id
-TELEGRAM_API_HASH=your_api_hash
-BOT_TOKEN=your_bot_token  # Optional
-
-# AI API
-GEMINI_API_KEY=your_gemini_key
-
-# Email (Optional)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
-
-# Job Criteria
-TARGET_ROLES=SDE,Software Engineer,Backend Developer
-MIN_EXPERIENCE=0
-MAX_EXPERIENCE=5
-MIN_CTC=10
-TARGET_CHANNELS=@jobs_channel1,@jobs_channel2
-
-# Application Settings
-MAX_APPLICATIONS_PER_DAY=10
-DELAY_BETWEEN_APPLICATIONS=300
-AUTO_APPLY=false  # Set to true for fully automated applications
+pip install -r requirements.txt
+playwright install
 ```
 
-### Personal Profile (personal.txt)
-Fill in your personal information in the provided template. The system will prompt you for any missing required fields.
+Optional (if Streamlit was not installed by requirements):
 
-## Usage Examples
-
-### Batch Job Search and Application
 ```bash
-# Search for jobs from last 7 days and apply
-python main.py --mode batch --days 7
-
-# Search from last 3 days
-python main.py --mode batch --days 3
+pip install streamlit
 ```
 
-### Real-time Monitoring
+3. Configure `.env` (required keys)
+
+```env
+NAUKRI_EMAIL=your_email
+NAUKRI_PASSWORD=your_password
+GROQ_API_KEY=optional_if_using_groq
+GEMINI_API_KEY=optional_if_using_gemini
+```
+
+4. Update profile details in `personal.txt`.
+
+## How to Run
+
+### 1) Full pipeline (recommended)
+
 ```bash
-# Start monitoring for new job posts
-python main.py --mode monitor
+python main.py --mode pipeline --max-jobs 10
 ```
 
-### Statistics and Reports
+### 1.1) Query mode (client agent talks to other agents)
+
 ```bash
-# View application statistics
-python main.py --mode stats
-
-# Generate detailed report
-python main.py --mode report
-
-# Update your profile interactively
-python main.py --mode update-profile
+python main.py --mode query --query "fetch jobs"
+python main.py --mode query --query "rewrite resume"
+python main.py --mode query --query "apply on naukri"
+python main.py --mode query --query "external apply"
+python main.py --mode query --query "run full pipeline" --max-jobs 10
 ```
 
-### Programmatic Usage
-```python
-from main import AutoApplyAgent
+## Backend + Frontend (Recommended)
 
-# Create and initialize agent
-agent = AutoApplyAgent()
-await agent.initialize()
+Do not run individual agents directly. Run the backend server once, then send all user queries from frontend.
 
-# Run full pipeline
-results = await agent.run_full_pipeline(days_back=7)
-print(f"Applied to {results['successful_applications']} jobs")
-```
+### Start backend server
 
-## Supported Platforms
-
-- **Web Portals**: Workday, Naukri.com, LinkedIn (Easy Apply), Generic job boards
-- **Email Applications**: SMTP-based email sending
-- **Telegram Channels**: Any public Telegram channel with job postings
-
-## Safety Features
-
-- **Daily Application Limits**: Prevents spam applications
-- **Human Review**: Option to review applications before submission
-- **Profile Validation**: Ensures complete information before applying
-- **Error Handling**: Comprehensive logging and error recovery
-- **Anti-Detection**: Stealth browsing techniques for web automation
-
-## Output Files
-
-- `data/tracker.csv` - Application tracking spreadsheet
-- `data/applications.json` - Detailed application data
-- `data/history.txt` - Human-readable application history
-- `output/cv_*.pdf` - Generated CVs
-- `logs/autoapply.log` - Application logs
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Telegram Connection Fails**:
-   - Verify API ID and Hash from https://my.telegram.org
-   - Check internet connection
-   - Ensure phone number is verified
-
-2. **Gemini API Errors**:
-   - Verify API key from https://ai.google.dev
-   - Check API quota and billing
-   - Ensure proper internet access
-
-3. **Web Automation Fails**:
-   - Try running with `--headless false` to see browser
-   - Check if job portal has updated their interface
-   - Verify network connectivity
-
-4. **Email Sending Fails**:
-   - Use app-specific passwords for Gmail
-   - Check SMTP settings
-   - Verify email credentials
-
-### Debug Mode
 ```bash
-# Run with verbose logging
-python main.py --mode batch --days 1 --verbose
-
-# Run browser in visible mode (for debugging web automation)
-python main.py --mode batch --headless false
+./scripts/run_backend_server.sh
 ```
 
-## Contributing
+Backend endpoints:
+- `GET http://127.0.0.1:8000/health`
+- `POST http://127.0.0.1:8000/chat`
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+### Start frontend chat UI
 
-## License
+```bash
+./scripts/run_frontend.sh
+```
 
-MIT License - see LICENSE file for details.
+In the UI, ask natural queries. Backend routes to required agent(s) automatically.
 
-## Disclaimer
+### Start full stack with one command
 
-This tool is for educational and personal use only. Always:
-- Respect website terms of service
-- Follow job application etiquette
-- Review applications before submission
-- Use responsibly and ethically
+```bash
+./scripts/run_full_stack.sh
+```
 
-## Support
+### 1.2) Chat Frontend (simple UI like chat model)
 
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the logs in `logs/autoapply.log`
-3. Open an issue on GitHub
+Run:
 
----
+```bash
+streamlit run frontend/chat_frontend.py
+```
 
-**Happy Job Hunting! 🚀**
+Then open the local URL shown by Streamlit (usually `http://localhost:8501`) and ask queries in chat.
+
+Example queries:
+- `fetch jobs`
+- `rewrite resume`
+- `apply on naukri`
+- `run full pipeline`
+
+If LLM connectivity is down, backend/frontend return a clean failure response instead of crashing.
+
+Example response includes:
+- `selected_flow`
+- `response`
+- `correlation_id` or A2A conversation `result`
+- step-by-step agent execution data
+
+### 2) Run individual agents
+
+```bash
+python main.py --mode naukri-scraper --max-jobs 10
+python main.py --mode fetch-jobs --max-jobs 10
+python main.py --mode resume-rewrite
+python main.py --mode naukri-apply
+python main.py --mode external-apply
+```
+
+### 3) MCP mode
+
+List MCP tools:
+
+```bash
+python main.py --mode mcp-tools
+```
+
+Run through MCP routing:
+
+```bash
+python main.py --mode pipeline --mcp
+```
+
+## Useful Notes
+
+- Output/job files are written under `data/`.
+- Generated resumes are saved under `output/`.
+- Logs are in `logs/autoapply.log`.
+- If browser automation fails, run with visible browser from underlying scripts where applicable.
+- For MCP routing, add `--mcp` to supported modes.

@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, ValidationError
 import configparser
 from pathlib import Path
 
-from config import config
+from modules.core.config.settings import config
 
 logger = logging.getLogger(__name__)
 

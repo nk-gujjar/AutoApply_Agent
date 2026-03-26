@@ -6,8 +6,8 @@ import json
 from datetime import datetime
 from typing import Dict
 
-from config import config, create_llm
-from human_loop import PersonalProfile
+from modules.core.config.settings import config, create_llm
+from modules.core.profile.human_loop import PersonalProfile
 
 logger = logging.getLogger(__name__)
 
