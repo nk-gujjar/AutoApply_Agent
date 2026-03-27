@@ -4,16 +4,12 @@ import asyncio
 from dataclasses import asdict
 from typing import Any, Dict
 
+import httpx
+
 from modules.core.config.settings import logger, create_llm
 
-from .a2a import A2ACoordinator
-from .agents import (
-    ExternalApplierAgent,
-    FetchJobsAgent,
-    NaukriApplierAgent,
-    NaukriScraperAgent,
-    ResumeRewriteAgent,
-)
+from .a2a import A2ACoordinator, A2AHttpClient, LocalA2AAgentServer
+from .agent_catalog import get_routing_manifest, load_agent_instances
 from .llm_router import LLMRouter, ParsedIntent
 from .mcp import MCPClient, MCPServer
 from .models import A2AConversationResult, AgentResult
@@ -22,13 +18,8 @@ from .tools import ToolRegistry, WorkspaceIOTools
 
 class ClientAgent:
     def __init__(self) -> None:
-        self.agents = {
-            "naukri_scraper": NaukriScraperAgent(),
-            "fetch_jobs": FetchJobsAgent(),
-            "resume_rewrite": ResumeRewriteAgent(),
-            "naukri_applier": NaukriApplierAgent(),
-            "external_applier": ExternalApplierAgent(),
-        }
+        self.agents = load_agent_instances()
+        self.routing_manifest = get_routing_manifest()
 
         self.tools = ToolRegistry()
         self.tools.register("load_naukri_jobs_file", WorkspaceIOTools.load_naukri_jobs_file)
@@ -37,58 +28,31 @@ class ClientAgent:
         self.mcp_server = MCPServer()
         self._register_mcp_tools()
         self.mcp_client = MCPClient(self.mcp_server)
-        self.a2a = A2ACoordinator(self.route)
+        self.a2a_clients = self._build_local_a2a_clients()
+        self.a2a = A2ACoordinator(self.a2a_clients, dispatcher=self.route)
         self.llm = create_llm()
-        self.llm_router = LLMRouter()
-    
-    def _requires_agent(self, query: str) -> bool:
-        """Check if query requires agent involvement based on keywords."""
-        q = (query or "").strip().lower()
-        agent_keywords = {
-            "full pipeline": ["full", "pipeline", "all agents", "end to end"],
-            "fetch_jobs": ["fetch", "scrape", "jobs list", "find jobs"],
-            "resume_rewrite": ["resume", "cv", "rewrite"],
-            "naukri_applier": ["naukri apply", "apply naukri", "apply on naukri"],
-            "external_applier": ["external apply", "company site", "external"],
-        }
-        
-        for agent, keywords in agent_keywords.items():
-            if any(key in q for key in keywords):
-                return True
-        return False
-    
-    async def _get_llm_response(self, query: str, correlation_id: str) -> Dict[str, Any]:
-        """Get LLM response for queries not requiring agents."""
-        try:
-            message = self.llm.invoke(query)
-            response_text = message.content if hasattr(message, 'content') else str(message)
-            
-            return {
-                "status": "ok",
-                "query": query,
-                "selected_flow": "llm",
-                "response": response_text,
-                "correlation_id": correlation_id,
-                "result": {
-                    "type": "llm_response",
-                    "content": response_text,
-                },
-            }
-        except Exception as exc:
-            logger.exception("LLM response generation failed for query: %s", query)
-            return {
-                "status": "failed",
-                "query": query,
-                "selected_flow": "llm",
-                "response": "I couldn't generate a response. Please try again.",
-                "correlation_id": correlation_id,
-                "error": str(exc),
-                "result": {
-                    "type": "llm_error",
-                    "error": str(exc),
-                },
-            }
+        self.llm_router = LLMRouter(routing_manifest=self.routing_manifest)
 
+    def _build_local_a2a_clients(self) -> Dict[str, A2AHttpClient]:
+        clients: Dict[str, A2AHttpClient] = {}
+
+        for agent_name in self.agents.keys():
+            async def _executor(payload: Dict[str, Any], name: str = agent_name) -> Dict[str, Any]:
+                return await self._route_direct_dict(name, payload)
+
+            server = LocalA2AAgentServer(
+                agent_name=agent_name,
+                execute_fn=_executor,
+                description=f"AutoApply specialized agent '{agent_name}'",
+            )
+            http_client = httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=server.app),
+                base_url=f"http://{agent_name}.local",
+            )
+            clients[agent_name] = A2AHttpClient(name=agent_name, http_client=http_client)
+
+        return clients
+    
     def _extract_jobs(self, route_result: Dict[str, Any]) -> list[Dict[str, Any]]:
         return route_result.get("result", {}).get("data", {}).get("jobs", [])
 
@@ -96,59 +60,32 @@ class ClientAgent:
         self, jobs: list[Dict[str, Any]], max_items: int = 5, source: str = "unknown", include_descriptions: bool = False
     ) -> Dict[str, Any]:
         """
-        Reformat job list into humanoid, conversational response.
-        Includes source information (cache vs live scrape).
-        Optionally includes job descriptions from jd_summary.
+        Reformat job list into minimal response with only name and description.
         """
         trimmed = jobs[:max_items]
         concise_jobs = []
 
         for job in trimmed:
-            job_entry = {
-                "title": job.get("title", "N/A"),
-                "company": job.get("company", "N/A"),
-                "location": job.get("location", "N/A"),
-                "experience": job.get("experience", "N/A"),
-                "apply_type": job.get("apply_type", "N/A"),
-                "apply_status": job.get("apply_status", "N/A"),
-                "ctc": job.get("ctc", "Not mentioned"),
-                "link": job.get("link", "N/A"),
-            }
-            # Add description if requested and available
-            if include_descriptions and "jd_summary" in job:
-                job_entry["description"] = job.get("jd_summary", "")
-            concise_jobs.append(job_entry)
+            description = job.get("jd_summary") or job.get("description") or "Description not available"
+            concise_jobs.append(
+                {
+                    "name": job.get("title", "N/A"),
+                    "description": description,
+                }
+            )
 
         if not concise_jobs:
             return {
-                "summary": "😔 No jobs found matching your criteria. Try adjusting your filters or check back later!",
+                "summary": "No jobs found.",
                 "jobs": concise_jobs,
                 "source": source,
             }
 
-        # Build humanoid response
-        source_emoji = "📦" if source == "cache" else "🔄"
-        source_text = "cached database" if source == "cache" else "live scraping"
-        
-        lines = [
-            f"✨ Great! I found **{len(jobs)}** matching jobs from our {source_text}.",
-            f"Here are the top {len(concise_jobs)} opportunities:\n",
-        ]
-        
+        lines = [f"Found {len(concise_jobs)} jobs:\n"]
+
         for index, job in enumerate(concise_jobs, start=1):
-            lines.append(
-                f"{index}. **{job['title']}** @ {job['company']}\n"
-                f"   📍 Location: {job['location']} | 📅 Exp: {job['experience']}\n"
-                f"   💰 CTC: {job['ctc']} | 🔗 Apply: {job['apply_type']}\n"
-            )
-            # Add description if available
-            if include_descriptions and "description" in job and job["description"]:
-                # Truncate long descriptions to 200 chars
-                desc = job["description"][:200] + ("..." if len(job["description"]) > 200 else "")
-                lines.append(f"   📝 Description: {desc}\n")
-        
-        lines.append(f"\n{source_emoji} Data from: {source_text}")
-        lines.append("💡 Pro tip: Use 'fetch jobs' with filters to narrow down results!")
+            desc = (job["description"] or "Description not available").strip()
+            lines.append(f"{index}. {job['name']}\nDescription: {desc}\n")
 
         return {
             "summary": "".join(lines),
@@ -183,6 +120,16 @@ class ClientAgent:
         except Exception as exc:
             logger.exception("Agent execution failed for %s", task)
             return AgentResult(agent=task, success=False, error=str(exc))
+
+    async def _route_direct_dict(self, task: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        result = await self._route_direct(task, payload)
+        return {
+            "agent": result.agent,
+            "success": result.success,
+            "data": result.data,
+            "error": result.error,
+            "created_at": result.created_at,
+        }
 
     async def route(self, task: str, payload: Dict[str, Any], use_mcp: bool = False) -> Dict[str, Any]:
         if use_mcp:
@@ -248,6 +195,76 @@ class ClientAgent:
             "external_apply": external_apply_result,
         }
 
+    def _build_agent_payload(self, agent_name: str, intent: ParsedIntent) -> Dict[str, Any]:
+        manifest = self.routing_manifest.get(agent_name, {})
+        defaults = dict(manifest.get("default_payload", {}))
+        allowed_keys = set(manifest.get("allowed_payload_keys", []))
+
+        params = intent.parameters if isinstance(intent.parameters, dict) else {}
+        if allowed_keys:
+            filtered = {key: value for key, value in params.items() if key in allowed_keys}
+        else:
+            filtered = dict(params)
+
+        defaults.update(filtered)
+        return defaults
+
+    def _agent_intent_name(self, agent_name: str) -> str:
+        manifest = self.routing_manifest.get(agent_name, {})
+        return str(manifest.get("a2a_intent") or agent_name)
+
+    async def _run_single_agent_from_intent(
+        self, query: str, correlation_id: str, intent: ParsedIntent
+    ) -> Dict[str, Any]:
+        target_agent = intent.primary_intent if intent.primary_intent in self.agents else ""
+        if not target_agent and intent.agents_to_call:
+            target_agent = intent.agents_to_call[0]
+
+        if target_agent not in self.agents:
+            return await self._handle_llm_only(query, correlation_id, intent)
+
+        payload = self._build_agent_payload(target_agent, intent)
+        step = await self.a2a.ask_agent(
+            sender="client_agent",
+            agent_name=target_agent,
+            intent=self._agent_intent_name(target_agent),
+            payload=payload,
+            use_mcp=False,
+            correlation_id=correlation_id,
+        )
+
+        result = step["result"]
+        ok = bool(result.get("ok"))
+
+        response = f"Executed agent: {target_agent}."
+        fetch_details: Dict[str, Any] | None = None
+        if target_agent == "fetch_jobs" and ok:
+            jobs = self._extract_jobs(result)
+            source = result.get("result", {}).get("data", {}).get("source", "unknown")
+            include_descriptions = bool(payload.get("include_descriptions", False))
+            fetch_details = self._rewrite_fetch_details(
+                jobs,
+                max_items=len(jobs),
+                source=source,
+                include_descriptions=include_descriptions,
+            )
+            response = fetch_details["summary"]
+
+        output = {
+            "status": "ok" if ok else "failed",
+            "query": query,
+            "selected_flow": target_agent,
+            "response": response,
+            "correlation_id": correlation_id,
+            "intent_confidence": intent.confidence,
+            "reasoning": intent.reasoning,
+            "extracted_params": payload,
+            "result": result,
+        }
+        if fetch_details is not None:
+            output["fetch_details"] = fetch_details
+        return output
+
     async def handle_query(self, query: str) -> Dict[str, Any]:
         """
         Handle user query using LLM-based intent parsing.
@@ -279,28 +296,13 @@ class ClientAgent:
                 intent.reasoning,
             )
 
-            # Route based on primary intent
-            if intent.primary_intent == "llm_only":
-                # General question - use LLM directly
+            if intent.primary_intent == "llm_only" or not intent.agents_to_call:
                 return await self._handle_llm_only(q, correlation_id, intent)
-            
-            elif intent.primary_intent == "fetch_jobs":
-                # Use LLM-extracted parameters (max_jobs, filters, keywords)
-                return await self._handle_fetch_jobs(q, correlation_id, intent)
-            
-            elif intent.primary_intent == "resume_rewrite":
-                # Resume rewriting - multiple agents if needed
-                return await self._handle_resume_rewrite(q, correlation_id, intent)
-            
-            elif intent.primary_intent == "naukri_applier":
-                return await self._handle_naukri_applier(q, correlation_id, intent)
-            
-            elif intent.primary_intent == "external_applier":
-                return await self._handle_external_applier(q, correlation_id, intent)
-            
-            else:
-                # Fallback to LLM
-                return await self._handle_llm_only(q, correlation_id, intent)
+
+            if len(intent.agents_to_call) > 1:
+                return await self._handle_multi_agent_flow(q, correlation_id, intent)
+
+            return await self._run_single_agent_from_intent(q, correlation_id, intent)
 
         except Exception as exc:
             logger.exception("Error handling query: %s", exc)
@@ -338,211 +340,25 @@ class ClientAgent:
                 "correlation_id": correlation_id,
             }
 
-    async def _handle_fetch_jobs(
-        self, query: str, correlation_id: str, intent: ParsedIntent
-    ) -> Dict[str, Any]:
-        """Handle job fetching with LLM-extracted parameters."""
-        try:
-            max_jobs = intent.parameters.get("max_jobs", 5)
-            filters = intent.parameters.get("filters", {})
-            
-            # Check if multiple agents are needed (e.g., fetch + apply)
-            if len(intent.agents_to_call) > 1:
-                return await self._handle_multi_agent_flow(query, correlation_id, intent)
-            
-            # Single agent: fetch_jobs
-            step = await self.a2a.ask_agent(
-                sender="client_agent",
-                agent_name="fetch_jobs",
-                intent="discover_jobs",
-                payload={"max_jobs": max_jobs, "filters": filters, "use_cache": True},
-                use_mcp=False,
-                correlation_id=correlation_id,
-            )
-            
-            result = step["result"]
-            jobs = self._extract_jobs(result) if result.get("ok") else []
-            source = result.get("result", {}).get("data", {}).get("source", "unknown")
-            
-            # Format with LLM-extracted max_jobs (should now return exact count)
-            include_descriptions = intent.parameters.get("include_descriptions", False)
-            rewritten = self._rewrite_fetch_details(jobs, max_items=len(jobs), source=source, include_descriptions=include_descriptions)
-            
-            return {
-                "status": "ok" if result.get("ok") else "failed",
-                "query": query,
-                "selected_flow": "fetch_jobs",
-                "response": rewritten["summary"] if result.get("ok") else "Failed to fetch jobs.",
-                "correlation_id": correlation_id,
-                "intent_confidence": intent.confidence,
-                "reasoning": intent.reasoning,
-                "extracted_params": {
-                    "max_jobs": max_jobs,
-                    "filters": filters,
-                },
-                "fetch_details": rewritten,
-                "result": result,
-            }
-        except Exception as exc:
-            logger.exception("Fetch jobs failed: %s", exc)
-            return {
-                "status": "failed",
-                "response": "Failed to fetch jobs. Please try again.",
-                "error": str(exc),
-                "correlation_id": correlation_id,
-            }
-
-    async def _handle_resume_rewrite(
-        self, query: str, correlation_id: str, intent: ParsedIntent
-    ) -> Dict[str, Any]:
-        """Handle resume rewriting."""
-        try:
-            # Check if resume tailoring is needed with fetched jobs
-            if len(intent.agents_to_call) > 1:
-                return await self._handle_multi_agent_flow(query, correlation_id, intent)
-            
-            step = await self.a2a.ask_agent(
-                sender="client_agent",
-                agent_name="resume_rewrite",
-                intent="tailor_resume",
-                payload={},
-                use_mcp=False,
-                correlation_id=correlation_id,
-            )
-            
-            result = step["result"]
-            count = result.get("result", {}).get("data", {}).get("count", 0) if result.get("ok") else 0
-            
-            return {
-                "status": "ok" if result.get("ok") else "failed",
-                "query": query,
-                "selected_flow": "resume_rewrite",
-                "response": f"✨ Generated {count} tailored resume output(s).",
-                "correlation_id": correlation_id,
-                "intent_confidence": intent.confidence,
-                "reasoning": intent.reasoning,
-                "result": result,
-            }
-        except Exception as exc:
-            logger.exception("Resume rewrite failed: %s", exc)
-            return {
-                "status": "failed",
-                "response": "Failed to rewrite resume. Please try again.",
-                "error": str(exc),
-                "correlation_id": correlation_id,
-            }
-
-    async def _handle_naukri_applier(
-        self, query: str, correlation_id: str, intent: ParsedIntent
-    ) -> Dict[str, Any]:
-        """Handle Naukri applications."""
-        try:
-            step = await self.a2a.ask_agent(
-                sender="client_agent",
-                agent_name="naukri_applier",
-                intent="apply_naukri",
-                payload={},
-                use_mcp=False,
-                correlation_id=correlation_id,
-            )
-            
-            result = step["result"]
-            applied = result.get("result", {}).get("data", {}).get("applied", 0) if result.get("ok") else 0
-            
-            return {
-                "status": "ok" if result.get("ok") else "failed",
-                "query": query,
-                "selected_flow": "naukri_applier",
-                "response": f"🚀 Applied to {applied} jobs on Naukri!",
-                "correlation_id": correlation_id,
-                "intent_confidence": intent.confidence,
-                "reasoning": intent.reasoning,
-                "result": result,
-            }
-        except Exception as exc:
-            logger.exception("Naukri apply failed: %s", exc)
-            return {
-                "status": "failed",
-                "response": "Failed to apply on Naukri. Please try again.",
-                "error": str(exc),
-                "correlation_id": correlation_id,
-            }
-
-    async def _handle_external_applier(
-        self, query: str, correlation_id: str, intent: ParsedIntent
-    ) -> Dict[str, Any]:
-        """Handle external (direct company) applications."""
-        try:
-            step = await self.a2a.ask_agent(
-                sender="client_agent",
-                agent_name="external_applier",
-                intent="apply_external",
-                payload={"dry_run": False},
-                use_mcp=False,
-                correlation_id=correlation_id,
-            )
-            
-            result = step["result"]
-            applied = result.get("result", {}).get("data", {}).get("applied", 0) if result.get("ok") else 0
-            
-            return {
-                "status": "ok" if result.get("ok") else "failed",
-                "query": query,
-                "selected_flow": "external_applier",
-                "response": f"🎯 Applied to {applied} companies directly!",
-                "correlation_id": correlation_id,
-                "intent_confidence": intent.confidence,
-                "reasoning": intent.reasoning,
-                "result": result,
-            }
-        except Exception as exc:
-            logger.exception("External apply failed: %s", exc)
-            return {
-                "status": "failed",
-                "response": "Failed to apply externally. Please try again.",
-                "error": str(exc),
-                "correlation_id": correlation_id,
-            }
-
     async def _handle_multi_agent_flow(
         self, query: str, correlation_id: str, intent: ParsedIntent
     ) -> Dict[str, Any]:
         """Handle multiple agent calls (e.g., fetch jobs -> apply to them -> rewrite resume)."""
         try:
             sequence = []
-            params = intent.parameters
-            
-            # Build sequence based on agents to call
-            if "fetch_jobs" in intent.agents_to_call:
+
+            for agent_name in intent.agents_to_call:
+                if agent_name not in self.agents:
+                    continue
+
                 sequence.append({
-                    "agent": "fetch_jobs",
-                    "intent": "discover_jobs",
-                    "payload": {
-                        "max_jobs": params.get("max_jobs", 5),
-                        "filters": params.get("filters", {}),
-                    },
+                    "agent": agent_name,
+                    "intent": self._agent_intent_name(agent_name),
+                    "payload": self._build_agent_payload(agent_name, intent),
                 })
-            
-            if "resume_rewrite" in intent.agents_to_call:
-                sequence.append({
-                    "agent": "resume_rewrite",
-                    "intent": "tailor_resume",
-                    "payload": {},
-                })
-            
-            if "naukri_applier" in intent.agents_to_call:
-                sequence.append({
-                    "agent": "naukri_applier",
-                    "intent": "apply_naukri",
-                    "payload": {},
-                })
-            
-            if "external_applier" in intent.agents_to_call:
-                sequence.append({
-                    "agent": "external_applier",
-                    "intent": "apply_external",
-                    "payload": {"dry_run": False},
-                })
+
+            if not sequence:
+                return await self._handle_llm_only(query, correlation_id, intent)
             
             # Run A2A sequence
             conversation = await self.a2a.run_sequence(

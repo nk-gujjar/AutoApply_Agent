@@ -27,14 +27,32 @@ Core implementations are organized under `modules/core/*`.
 
 1. User sends a query to `ClientAgent`
 2. `ClientAgent` creates an A2A message with `correlation_id`
-3. `A2ACoordinator` routes messages to one or more agents
+3. `A2ACoordinator` uses A2A HTTP+JSON (`/message:send`) to communicate with one or more specialized agents
 4. Agents execute tasks and return structured results
 5. Client agent aggregates agent/tool outputs and returns one final response
+
+The local A2A implementation also publishes per-agent cards at:
+- `/.well-known/agent-card.json`
 
 Core A2A files:
 - `modules/multi_agent/a2a.py`
 - `modules/multi_agent/client_agent.py`
 - `modules/multi_agent/models.py`
+- `modules/multi_agent/agent_catalog.py`
+
+Scalable onboarding:
+- Add new agents once in `modules/multi_agent/config/agent_catalog.yaml`
+- Client orchestration, routing hints, and agent-card metadata are auto-derived from the catalog
+- No manual hardcoding in backend card list required
+- `modules/multi_agent/agent_catalog.py` now loads and validates this YAML at startup
+
+Backend modularization:
+- `backend/api/schemas.py` -> shared request/response schemas
+- `backend/api/chat_routes.py` -> chat endpoints
+- `backend/api/a2a_routes.py` -> A2A endpoints
+- `backend/api/state.py` -> app state (client agent + task store)
+- `backend/api/app.py` -> FastAPI assembly
+- `backend/server.py` -> minimal entrypoint
 
 ## Project Structure
 
@@ -109,6 +127,7 @@ python main.py --mode query --query "rewrite resume"
 python main.py --mode query --query "apply on naukri"
 python main.py --mode query --query "external apply"
 python main.py --mode query --query "run full pipeline" --max-jobs 10
+python main.py --mode a2a-cards
 ```
 
 ## Backend + Frontend (Recommended)
@@ -124,6 +143,30 @@ Do not run individual agents directly. Run the backend server once, then send al
 Backend endpoints:
 - `GET http://127.0.0.1:8000/health`
 - `POST http://127.0.0.1:8000/chat`
+- `GET http://127.0.0.1:8000/.well-known/agent-card.json` (A2A discovery)
+- Returns client agent card + `agentCards` list (naukri_scraper, fetch_jobs, resume_rewrite, naukri_applier, external_applier)
+- `GET http://127.0.0.1:8000/agent-cards` (direct list response)
+- `POST http://127.0.0.1:8000/message:send` (A2A send message)
+- `GET http://127.0.0.1:8000/tasks/{id}` (A2A get task)
+- `GET http://127.0.0.1:8000/tasks` (A2A list tasks)
+
+### A2A quick test (external agent style)
+
+```bash
+curl -s http://127.0.0.1:8000/.well-known/agent-card.json | jq
+curl -s http://127.0.0.1:8000/agent-cards | jq
+
+curl -s -X POST http://127.0.0.1:8000/message:send \
+	-H 'Content-Type: application/json' \
+	-H 'A2A-Version: 1.0' \
+	-d '{
+		"message": {
+			"messageId": "msg-1",
+			"role": "ROLE_USER",
+			"parts": [{"text": "fetch 2 jobs with descriptions"}]
+		}
+	}' | jq
+```
 
 ### Start frontend chat UI
 
@@ -138,6 +181,8 @@ In the UI, ask natural queries. Backend routes to required agent(s) automaticall
 ```bash
 ./scripts/run_full_stack.sh
 ```
+
+`run_backend_server.sh` and `run_full_stack.sh` now auto-clear stale processes on port `8000` before startup.
 
 ### 1.2) Chat Frontend (simple UI like chat model)
 
@@ -154,6 +199,32 @@ Example queries:
 - `rewrite resume`
 - `apply on naukri`
 - `run full pipeline`
+
+Frontend now supports:
+- Chat API mode (`/chat`, `/chat/debug`)
+- A2A API mode (`/message:send`)
+- Live agent registry view from `/agent-cards`
+
+## Final Run Commands
+
+```bash
+cd /Users/niteshkumar/Documents/other/AutoApply_Agent
+
+# 1) Start backend
+./scripts/run_backend_server.sh
+
+# 2) In another terminal, start frontend
+./scripts/run_frontend.sh
+
+# 3) Validate A2A cards
+curl -s http://127.0.0.1:8000/.well-known/agent-card.json | jq '{managedAgents:.metadata.managedAgents,count:.agentCardsCount}'
+
+# 4) Validate A2A message flow
+curl -s -X POST http://127.0.0.1:8000/message:send \
+	-H "Content-Type: application/json" \
+	-H "A2A-Version: 1.0" \
+	-d '{"message":{"messageId":"msg-1","role":"ROLE_USER","parts":[{"text":"fetch 2 jobs with descriptions"}]}}' | jq
+```
 
 If LLM connectivity is down, backend/frontend return a clean failure response instead of crashing.
 

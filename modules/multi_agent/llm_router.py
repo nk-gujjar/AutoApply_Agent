@@ -6,7 +6,7 @@ import asyncio
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from modules.core.config.settings import logger, create_llm
 
@@ -24,9 +24,10 @@ class ParsedIntent:
 class LLMRouter:
     """Uses LLM to intelligently parse intent and extract parameters from user queries."""
     
-    def __init__(self):
+    def __init__(self, routing_manifest: Dict[str, Dict[str, Any]]):
         self.llm = create_llm()
-        self.agents = ["fetch_jobs", "resume_rewrite", "naukri_applier", "external_applier"]
+        self.routing_manifest = routing_manifest
+        self.agents = list(routing_manifest.keys())
     
     async def parse_intent(self, query: str) -> ParsedIntent:
         """
@@ -60,16 +61,30 @@ class LLMRouter:
     
     def _create_routing_prompt(self, query: str) -> str:
         """Create a structured prompt for LLM to parse intent."""
+        agent_profiles = {
+            agent: {
+                "description": details.get("description", ""),
+                "allowed_payload_keys": details.get("allowed_payload_keys", []),
+                "default_payload": details.get("default_payload", {}),
+                "hints": details.get("hints", []),
+            }
+            for agent, details in self.routing_manifest.items()
+        }
+        agent_ids = "|".join(self.agents)
+
         return f"""You are an intelligent job automation assistant router. Analyze the user's query and determine:
-1. The primary intent (fetch_jobs, resume_rewrite, naukri_applier, external_applier, or llm_only)
+1. The primary intent ({agent_ids} or llm_only)
 2. Any parameters needed (max_jobs, filters, etc.)
 3. If multiple agents should be called in sequence
+
+Available agents and capabilities:
+{json.dumps(agent_profiles, indent=2)}
 
 User Query: "{query}"
 
 Respond in this EXACT JSON format:
 {{
-    "primary_intent": "fetch_jobs|resume_rewrite|naukri_applier|external_applier|llm_only",
+    "primary_intent": "<one of: {agent_ids}|llm_only>",
     "agents_to_call": ["agent1", "agent2"],
     "parameters": {{
         "max_jobs": <number or null>,
@@ -83,16 +98,12 @@ Respond in this EXACT JSON format:
 }}
 
 IMPORTANT RULES:
-- If user says "fetch 1 job", set max_jobs to 1
-- If user says "fetch 5 jobs", set max_jobs to 5
-- If user says "fetch 2 job" or "fetch 2 Job" (typo), set max_jobs to 2
-- If user says "fetch jobs", set max_jobs to 5 (default)
-- If user mentions "description" or "details", set include_descriptions to true
-- Extract keywords like "AI engineer", "Python developer", "remote" for filters
-- "Apply pipeline" or "full automation" means call multiple agents: [fetch_jobs, resume_rewrite, naukri_applier]
-- Use llm_only for general questions like "what is Python?", "how to prepare for interviews?"
-- TOLERATE TYPOS: "Job" = "jobs", "there" = "their", etc. - Focus on intent not grammar
-- If unsure, use llm_only to ask clarifying questions
+- Choose `llm_only` when no automation agent call is required.
+- `agents_to_call` must contain only relevant agents from the available list.
+- Parameters should match selected agents' capabilities and can be omitted when not needed.
+- "Apply pipeline" or "full automation" can use multiple agents in logical order.
+- Tolerate typos and infer intent from semantics, not grammar.
+- If unsure, choose `llm_only`.
 - Always respond with valid JSON only, no extra text"""
     
     def _parse_llm_response(self, response_text: str, query: str) -> ParsedIntent:
@@ -115,11 +126,15 @@ IMPORTANT RULES:
             reasoning = data.get("reasoning", "No reasoning provided")
             
             # Validate intent
-            if intent not in ["fetch_jobs", "resume_rewrite", "naukri_applier", "external_applier", "llm_only"]:
+            if intent not in [*self.agents, "llm_only"]:
                 intent = "llm_only"
+
+            agents = [agent for agent in agents if agent in self.agents]
+            if intent != "llm_only" and not agents:
+                agents = [intent]
             
             # Clean up parameters
-            cleaned_params = self._clean_parameters(intent, params)
+            cleaned_params = self._clean_parameters(intent, agents, params)
             
             return ParsedIntent(
                 primary_intent=intent,
@@ -129,44 +144,53 @@ IMPORTANT RULES:
                 reasoning=reasoning,
             )
             
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, TypeError, ValueError) as exc:
             logger.warning("Failed to parse LLM JSON response: %s", exc)
             return self._fallback_intent(query)
     
-    def _clean_parameters(self, intent: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _clean_parameters(self, intent: str, agents: list[str], params: Dict[str, Any]) -> Dict[str, Any]:
         """Clean and validate extracted parameters."""
-        cleaned = {}
-        
-        # Extract max_jobs
-        if "max_jobs" in params and params["max_jobs"] is not None:
+        if intent == "llm_only":
+            return {}
+
+        raw_params = params if isinstance(params, dict) else {}
+
+        selected_agents = [agent for agent in agents if agent in self.routing_manifest]
+        if not selected_agents and intent in self.routing_manifest:
+            selected_agents = [intent]
+
+        allowed_keys: set[str] = set()
+        defaults: Dict[str, Any] = {}
+        for agent in selected_agents:
+            manifest_entry = self.routing_manifest.get(agent, {})
+            allowed_keys.update(manifest_entry.get("allowed_payload_keys", []))
+            for key, value in manifest_entry.get("default_payload", {}).items():
+                defaults.setdefault(str(key), value)
+
+        cleaned = {
+            key: value
+            for key, value in raw_params.items()
+            if not allowed_keys or key in allowed_keys
+        }
+
+        for key, value in defaults.items():
+            cleaned.setdefault(key, value)
+
+        if "max_jobs" in cleaned and cleaned["max_jobs"] is not None:
             try:
-                max_jobs = int(params["max_jobs"])
-                cleaned["max_jobs"] = max(1, min(max_jobs, 25))  # Clamp between 1-25
+                cleaned["max_jobs"] = max(1, min(int(cleaned["max_jobs"]), 25))
             except (ValueError, TypeError):
-                cleaned["max_jobs"] = 5  # Default
-        else:
-            cleaned["max_jobs"] = 5  # Default
-        
-        # Extract filters
-        if "filters" in params and isinstance(params["filters"], dict):
-            cleaned["filters"] = params["filters"]
-        else:
+                cleaned["max_jobs"] = defaults.get("max_jobs", 5)
+
+        if "filters" in cleaned and not isinstance(cleaned.get("filters"), dict):
             cleaned["filters"] = {}
-        
-        # Extract keywords
-        if "keywords" in params and params["keywords"]:
-            cleaned["keywords"] = str(params["keywords"]).strip()
-        
-        # Extract dry_run
-        if "dry_run" in params and params["dry_run"] is not None:
-            cleaned["dry_run"] = bool(params["dry_run"])
-        
-        # Extract include_descriptions flag
-        if "include_descriptions" in params and params["include_descriptions"] is not None:
-            cleaned["include_descriptions"] = bool(params["include_descriptions"])
-        else:
-            cleaned["include_descriptions"] = False
-        
+
+        if "include_descriptions" in cleaned:
+            cleaned["include_descriptions"] = bool(cleaned["include_descriptions"])
+
+        if "dry_run" in cleaned:
+            cleaned["dry_run"] = bool(cleaned["dry_run"])
+
         return cleaned
     
     def _fallback_intent(self, query: str) -> ParsedIntent:
@@ -175,54 +199,34 @@ IMPORTANT RULES:
         
         # Check for full pipeline
         if any(key in q for key in ["full", "pipeline", "all agents", "end to end", "complete automation"]):
+            pipeline_agents = [
+                agent
+                for agent in ["fetch_jobs", "resume_rewrite", "naukri_applier", "external_applier"]
+                if agent in self.agents
+            ]
+            primary = pipeline_agents[0] if pipeline_agents else "llm_only"
             return ParsedIntent(
-                primary_intent="fetch_jobs",
-                agents_to_call=["fetch_jobs", "resume_rewrite", "naukri_applier", "external_applier"],
+                primary_intent=primary,
+                agents_to_call=pipeline_agents,
                 parameters={"max_jobs": 5},
                 confidence=0.7,
                 reasoning="User requested full automation pipeline",
             )
-        
-        # Check for fetch jobs
-        if any(key in q for key in ["fetch", "scrape", "jobs", "find opportunities", "search"]):
-            max_jobs = self._extract_max_jobs_fallback(q)
-            return ParsedIntent(
-                primary_intent="fetch_jobs",
-                agents_to_call=["fetch_jobs"],
-                parameters={"max_jobs": max_jobs},
-                confidence=0.8,
-                reasoning="User requested job fetching",
-            )
-        
-        # Check for resume
-        if any(key in q for key in ["resume", "cv", "rewrite", "tailor"]):
-            return ParsedIntent(
-                primary_intent="resume_rewrite",
-                agents_to_call=["resume_rewrite"],
-                parameters={},
-                confidence=0.8,
-                reasoning="User requested resume rewriting",
-            )
-        
-        # Check for naukri apply
-        if any(key in q for key in ["naukri", "apply naukri", "apply on naukri"]):
-            return ParsedIntent(
-                primary_intent="naukri_applier",
-                agents_to_call=["naukri_applier"],
-                parameters={},
-                confidence=0.8,
-                reasoning="User requested Naukri applications",
-            )
-        
-        # Check for external apply
-        if any(key in q for key in ["external", "company site", "direct application"]):
-            return ParsedIntent(
-                primary_intent="external_applier",
-                agents_to_call=["external_applier"],
-                parameters={},
-                confidence=0.8,
-                reasoning="User requested external applications",
-            )
+
+        # Check catalog-defined hints
+        for agent, details in self.routing_manifest.items():
+            hints = [str(h).lower() for h in details.get("hints", [])]
+            if any(hint in q for hint in hints if hint):
+                params: Dict[str, Any] = {}
+                if agent == "fetch_jobs":
+                    params["max_jobs"] = self._extract_max_jobs_fallback(q)
+                return ParsedIntent(
+                    primary_intent=agent,
+                    agents_to_call=[agent],
+                    parameters=params,
+                    confidence=0.75,
+                    reasoning=f"Matched query with routing hints for {agent}",
+                )
         
         # Default: LLM only for general queries
         return ParsedIntent(

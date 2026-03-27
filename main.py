@@ -34,6 +34,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "naukri-apply",
             "external-apply",
             "mcp-tools",
+            "a2a-cards",
         ],
         default="pipeline",
     )
@@ -49,11 +50,17 @@ async def _run_mode(client: ClientAgent, mode: str, args: argparse.Namespace) ->
         tools = await client.mcp_client.list_tools()
         return {"status": "ok", "tools": tools}
 
+    if mode == "a2a-cards":
+        cards: Dict[str, Any] = {}
+        for agent_name, a2a_client in client.a2a_clients.items():
+            cards[agent_name] = await a2a_client.fetch_agent_card()
+        return {"status": "ok", "cards": cards}
+
     if mode == "pipeline":
         return await client.run_pipeline(max_jobs=args.max_jobs, use_mcp=args.mcp)
 
     if mode == "query":
-        return await client.handle_query(args.query, use_mcp=args.mcp, max_jobs=args.max_jobs)
+        return await client.handle_query(args.query)
 
     if mode == "naukri-scraper":
         return await client.route(
