@@ -3,8 +3,9 @@ import logging
 import asyncio
 import subprocess
 import json
+import re
 from datetime import datetime
-from typing import Dict
+from typing import Any, Dict, List
 
 from modules.core.config.settings import config, create_llm
 from modules.core.profile.human_loop import PersonalProfile
@@ -54,15 +55,99 @@ class CVEngine:
     # Generate structured projects using JSON
     # ---------------------------------------------------
 
+    def _collect_profile_projects(self, profile: PersonalProfile) -> List[Dict[str, str]]:
+        projects: List[Dict[str, str]] = []
+        for index in range(1, 7):
+            name = getattr(profile, f"project_{index}_name", None)
+            if not name:
+                continue
+
+            projects.append(
+                {
+                    "name": str(name).strip(),
+                    "tech": str(getattr(profile, f"project_{index}_tech_stack", "") or "").strip(),
+                    "year": str(getattr(profile, f"project_{index}_duration", "") or "").strip(),
+                    "description": str(getattr(profile, f"project_{index}_description", "") or "").strip(),
+                }
+            )
+
+        return projects
+
+    def _extract_jd_keywords(self, job_data: Dict[str, Any]) -> set[str]:
+        parts: List[str] = []
+        for key in ["title", "description", "qualifications"]:
+            value = job_data.get(key)
+            if isinstance(value, str) and value.strip():
+                parts.append(value)
+
+        skills = job_data.get("skills_required")
+        if isinstance(skills, list):
+            parts.extend(str(item) for item in skills if str(item).strip())
+        elif isinstance(skills, str) and skills.strip():
+            parts.append(skills)
+
+        text = " ".join(parts).lower()
+        tokens = re.findall(r"[a-z0-9\+#\.]{2,}", text)
+        stop_words = {
+            "and", "the", "with", "for", "that", "this", "from", "into", "using",
+            "have", "has", "are", "you", "our", "your", "will", "job", "role",
+            "required", "preferred", "ability", "experience", "skills", "work", "team",
+            "strong", "high", "level", "including", "across", "within", "their",
+        }
+        return {token for token in tokens if token not in stop_words}
+
+    def _rank_projects_by_jd(self, profile: PersonalProfile, job_data: Dict[str, Any], limit: int = 3) -> List[Dict[str, Any]]:
+        projects = self._collect_profile_projects(profile)
+        if not projects:
+            return []
+
+        jd_keywords = self._extract_jd_keywords(job_data)
+        scored: List[tuple[int, Dict[str, str]]] = []
+
+        for project in projects:
+            project_text = f"{project['name']} {project['tech']} {project['description']}".lower()
+            project_tokens = set(re.findall(r"[a-z0-9\+#\.]{2,}", project_text))
+            overlap = len(jd_keywords & project_tokens)
+
+            # Small boost for explicit cloud/stack matches
+            bonus = 0
+            for marker in ["azure", "aws", "react", "angular", "sql", "c#", ".net", "llm", "agent", "fastapi"]:
+                if marker in project_text and marker in jd_keywords:
+                    bonus += 2
+
+            scored.append((overlap + bonus, project))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+        selected = [item[1] for item in scored[: max(1, min(limit, len(scored)))]]
+
+        normalized: List[Dict[str, Any]] = []
+        for project in selected:
+            bullets = [
+                project["description"] or "Delivered an end-to-end project aligned to target job requirements.",
+                f"Tech stack: {project['tech']}" if project["tech"] else "Implemented production-focused engineering practices.",
+            ]
+            normalized.append(
+                {
+                    "name": project["name"],
+                    "tech": project["tech"],
+                    "year": project["year"],
+                    "bullets": bullets,
+                }
+            )
+
+        return normalized
+
     async def generate_projects(self, job_data, profile):
+        ranked_fallback = self._rank_projects_by_jd(profile, job_data, limit=3)
+        target_count = min(3, len(ranked_fallback)) if ranked_fallback else 1
 
         prompt = f"""
 Return valid JSON ONLY.
 
 NOTE:
-- Strictly number of project should be minimum 2 and maximum 3.
+- Strictly return exactly {target_count} project entries in JSON.
 - Strictly don't change the project name.
-- Select 3 projects from the profile that best match the job requirements. Focus on projects that utilize the skills required by the job. For each project, provide a brief description, the tech stack used, and the year it was completed.
+- Select projects from the profile that best match the job requirements. Focus on projects that utilize the skills required by the job. For each project, provide a brief description, the tech stack used, and the year it was completed.
 - add 2 bullet points for each project highlighting the key achievements or responsibilities, especially those that align with the job requirements.
 - Bullet points shouldn't be short. They should be descriptive enough to convey the impact and relevance of the project to the job.
 - strictly limit bullet points to not more than 2 lines each.
@@ -86,6 +171,15 @@ JSON FORMAT:
 
 JOB SKILLS:
 {job_data.get("skills_required")}
+
+JOB TITLE:
+{job_data.get("title")}
+
+JOB DESCRIPTION:
+{job_data.get("description")}
+
+JOB QUALIFICATIONS:
+{job_data.get("qualifications")}
 
 PROJECT DATABASE
 
@@ -131,22 +225,70 @@ Duration: {profile.project_6_duration}
         try:
             content = response.content.strip()
             content = content.replace("```json", "").replace("```", "")
-            data = json.loads(response.content)
+            data = json.loads(content)
         except Exception:
-            logger.warning("LLM JSON parsing failed, fallback to default projects")
+            logger.warning("LLM JSON parsing failed, using deterministic JD-ranked fallback projects")
+            return ranked_fallback
 
-            data = {
-                "projects": [
-                    {
-                        "name": profile.project_1_name,
-                        "tech": profile.project_1_tech_stack,
-                        "year": profile.project_1_duration,
-                        "bullets": [profile.project_1_description]
-                    }
-                ]
-            }
+        parsed_projects = data.get("projects") if isinstance(data, dict) else []
+        if not isinstance(parsed_projects, list):
+            parsed_projects = []
 
-        return data["projects"]
+        normalized: List[Dict[str, Any]] = []
+        for item in parsed_projects:
+            if not isinstance(item, dict):
+                continue
+
+            name = str(item.get("name") or "").strip()
+            if not name:
+                continue
+
+            tech = str(item.get("tech") or "").strip()
+            year = str(item.get("year") or "").strip()
+            bullets_raw = item.get("bullets")
+
+            if isinstance(bullets_raw, list):
+                bullets = [str(b).strip() for b in bullets_raw if str(b).strip()]
+            elif isinstance(bullets_raw, str) and bullets_raw.strip():
+                bullets = [bullets_raw.strip()]
+            else:
+                bullets = []
+
+            if len(bullets) < 2:
+                fallback_project = next((p for p in ranked_fallback if p.get("name") == name), None)
+                if fallback_project:
+                    fallback_bullets = fallback_project.get("bullets", [])
+                    for bullet in fallback_bullets:
+                        if bullet and bullet not in bullets:
+                            bullets.append(bullet)
+                        if len(bullets) >= 2:
+                            break
+
+            if len(bullets) < 2:
+                bullets.append("Delivered measurable impact through robust engineering and production-quality implementation.")
+            if len(bullets) < 2:
+                bullets.append("Collaborated across design, development, and testing to ensure reliable outcomes.")
+
+            normalized.append(
+                {
+                    "name": name,
+                    "tech": tech,
+                    "year": year,
+                    "bullets": bullets[:2],
+                }
+            )
+
+        if len(normalized) < target_count:
+            existing_names = {item["name"] for item in normalized}
+            for project in ranked_fallback:
+                if project["name"] in existing_names:
+                    continue
+                normalized.append(project)
+                existing_names.add(project["name"])
+                if len(normalized) >= target_count:
+                    break
+
+        return normalized[:target_count] if normalized else ranked_fallback
 
     # ---------------------------------------------------
     # Rewrite Experience Bullets Based on JD
@@ -311,7 +453,7 @@ Return valid JSON ONLY.
         with open(tex_file, "w") as f:
             f.write(latex_code)
 
-        subprocess.run(
+        proc = subprocess.run(
             [
             "pdflatex",
             "-interaction=nonstopmode",
@@ -320,9 +462,20 @@ Return valid JSON ONLY.
             str(config.OUTPUT_DIR),
             str(tex_file),
             ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            capture_output=True,
+            text=True,
         )
+
+        pdf_file = config.OUTPUT_DIR / f"cv_{timestamp}.pdf"
+        if proc.returncode != 0 or not pdf_file.exists():
+            logger.error("pdflatex failed for %s", tex_file)
+            if proc.stdout:
+                logger.error("pdflatex stdout:\n%s", proc.stdout[-2000:])
+            if proc.stderr:
+                logger.error("pdflatex stderr:\n%s", proc.stderr[-2000:])
+            raise RuntimeError(
+                f"Failed to compile resume PDF. Check LaTeX/template syntax and installed TeX packages. Source: {tex_file}"
+            )
 
         # remove unwanted files
         extensions = [".aux", ".log", ".out", ".toc", ".fls", ".fdb_latexmk"]
@@ -332,7 +485,7 @@ Return valid JSON ONLY.
             if file.exists():
                 file.unlink()
 
-        return config.OUTPUT_DIR / f"cv_{timestamp}.pdf"
+        return pdf_file
 
     # ---------------------------------------------------
     # Main Pipeline

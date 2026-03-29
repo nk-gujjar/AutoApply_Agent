@@ -1,203 +1,78 @@
-# Chatbot LLM & Agent Integration
+# Chatbot Features (Current)
 
 ## Overview
-The chatbot now intelligently routes queries:
-- **LLM Response**: For generic queries that don't match agent keywords
-- **Agent Routing**: For specific job-related queries (fetch, resume, apply, etc.)
+The chatbot uses LLM intent parsing and agent orchestration. It supports plain Q&A, JD extraction, resume tailoring, and apply flows.
 
-## How It Works
+## Routing behavior
 
-### 1. Query Analysis
-When a user sends a query to `/chat` endpoint:
-```
-POST /chat
-{
-  "query": "your query here",
-  "use_mcp": false,
-  "max_jobs": 5
-}
-```
+### LLM-only
+General questions are answered directly by LLM.
 
-### 2. Flow Decision
-The `ClientAgent.handle_query()` method checks if the query contains agent keywords:
+Examples:
+- `What is Python?`
+- `How should I prepare for interviews?`
 
-**Agent Keywords** (requires agent):
-- `fetch_jobs`: "fetch", "scrape", "jobs list", "find jobs"
-- `resume_rewrite`: "resume", "cv", "rewrite"
-- `naukri_applier`: "naukri apply", "apply naukri", "apply on naukri"
-- `external_applier`: "external apply", "company site", "external"
-- `full pipeline`: "full", "pipeline", "all agents", "end to end"
+### Agent-driven
+Job automation requests call agents.
 
-**No Keywords** (uses LLM):
-Any other query without above keywords → LLM generates response
+Key flows:
+- JD extraction: `jd_extractor`
+- Resume tailoring: `jd_extractor -> resume_rewrite`
+- Job fetching: `fetch_jobs`
+- Apply flows: `naukri_applier`, `external_applier`
 
-### 3. Response Format
+## Chat request format
 
-#### Example 1: LLM Response (Generic Query)
-**Request:**
 ```json
 {
-  "query": "tell me about python programming",
-  "use_mcp": false
+  "query": "tailor resume for this jd https://...",
+  "session_id": "demo"
 }
 ```
 
-**Response:**
-```json
-{
-  "status": "ok",
-  "query": "tell me about python programming",
-  "selected_flow": "llm",
-  "response": "Python is a high-level, interpreted programming language...",
-  "result": {
-    "type": "llm_response",
-    "content": "Python is a high-level, interpreted programming language..."
-  },
-  "error": null
-}
-```
+`session_id` enables in-chat memory for follow-up prompts.
 
-#### Example 2: Agent Response (Job Fetch Query)
-**Request:**
-```json
-{
-  "query": "fetch jobs",
-  "use_mcp": false,
-  "max_jobs": 1
-}
-```
+## Memory features
 
-**Response:**
-```json
-{
-  "status": "ok",
-  "query": "fetch jobs",
-  "selected_flow": "fetch_jobs",
-  "response": "Found 1 jobs. Showing top 1:\n1. SSR-200-AI Engineer at S S Rana & Co | New Delhi(Adhchini) | 0-2 Yrs | easy_apply",
-  "correlation_id": "bbe4f444-3bd4-4b45-aedf-c23a51149cd6",
-  "fetch_details": {
-    "summary": "Found 1 jobs. Showing top 1:...",
-    "jobs": [...]
-  },
-  "result": {...}
-}
-```
+Supported prompts:
+- `tell me my last query`
+- `tell me my last conversation`
+- `tell me the jd link`
+- `what is the jd of the link I gave last time`
 
-## Features
+JD memory stores:
+- last extracted JD link
+- last extracted structured JD data (title/description/qualifications/skills)
 
-### ✅ Implemented
-1. **LLM-Based Generic Responses** - Uses Ollama (llama3.2) for queries without agent keywords
-2. **Intelligent Agent Routing** - Keyword-based routing to appropriate agents
-3. **Hybrid Flow** - Agents handle job-specific tasks, LLM handles general knowledge
-4. **Formatted Responses** - Job details are reformatted for readability
-5. **Error Handling** - Graceful fallback when LLM fails
+## Resume artifact support
 
-### 🔄 Architecture
-```
-┌─────────────────────┐
-│  User Query         │
-│  (via Frontend)     │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────────────────┐
-│ ClientAgent.handle_query()      │
-│ - Check query keywords          │
-└──────────┬──────────┬───────────┘
-           │          │
-    Agent Match  No Match
-           │          │
-           ▼          ▼
-    ┌─────────┐  ┌──────────┐
-    │ Agent   │  │ LLM      │
-    │ Routing │  │ Response │
-    │ System  │  │ Generator│
-    └─────────┘  └──────────┘
-           │          │
-           └────┬─────┘
-                ▼
-        ┌──────────────┐
-        │ Formatted    │
-        │ Response     │
-        └──────────────┘
-```
+When resume generation succeeds, chat response contains:
+- `resume_download_url`
+- `resume_file_name`
 
-## Testing
+Frontend exposes View/Download actions using this metadata.
 
-### Test 1: LLM Response
+## Debug mode
+
+`POST /chat/debug` returns:
+- `selected_flow`
+- `status`
+- `response`
+- `result` (flow-specific details)
+- `error` (if any)
+
+## Example tests
+
 ```bash
 curl -s -X POST http://127.0.0.1:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"query":"how to write clean code","use_mcp":false}'
-```
-Expected: Returns LLM-generated response with `"selected_flow": "llm"`
+  -d '{"query":"find the jd from https://apply.careers.microsoft.com/careers/job/1970393556640618","session_id":"demo"}' | jq
 
-### Test 2: Agent Query
-```bash
 curl -s -X POST http://127.0.0.1:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"query":"fetch jobs","use_mcp":false,"max_jobs":1}'
-```
-Expected: Calls fetch_jobs agent with `"selected_flow": "fetch_jobs"`
+  -d '{"query":"tell me the jd link","session_id":"demo"}' | jq
 
-### Test 3: Resume Query
-```bash
 curl -s -X POST http://127.0.0.1:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"query":"rewrite my resume","use_mcp":false}'
+  -d '{"query":"what is the jd of the link I gave last time","session_id":"demo"}' | jq
 ```
-Expected: Routes to resume_rewrite agent with `"selected_flow": "resume_rewrite"`
-
-## Configuration
-
-### LLM Settings
-- **Provider**: Ollama (local)
-- **Model**: llama3.2
-- **Base URL**: http://localhost:11434
-- **Temperature**: 0 (deterministic)
-
-### Agent Keywords
-Located in: `modules/multi_agent/client_agent.py`
-- Method: `_requires_agent()`
-- Easily customizable for new agents
-
-## Usage Examples
-
-### In Python
-```python
-from modules.multi_agent import ClientAgent
-
-agent = ClientAgent()
-
-# Generic query
-result = await agent.handle_query("What is artificial intelligence?")
-# Returns LLM response
-
-# Agent query
-result = await agent.handle_query("fetch jobs", max_jobs=5)
-# Returns agent result with formatted jobs
-```
-
-### Via REST API
-User can use any HTTP client to send queries to the `/chat` endpoint.
-
-## Future Enhancements
-1. LLM-based intent recognition (instead of keyword matching)
-2. Response formatting for all agent types (not just fetch_jobs)
-3. Context-aware responses using conversation history
-4. Streaming responses for long-running agents
-5. Agent selection using LLM (like ReAct pattern)
-
-## Troubleshooting
-
-### Backend Returns 500 Error
-- Check if Ollama is running: `curl http://localhost:11434/api/tags`
-- Start Ollama: `bash scripts/start_ollama_safe.sh`
-
-### LLM Times Out
-- Ollama might be processing. Try with a simpler query first.
-- Check Ollama status: `ollama list`
-
-### Agent Query Returns Empty Response
-- Make sure .env credentials are set (NAUKRI_EMAIL, NAUKRI_PASSWORD)
-- Check backend logs for detailed errors

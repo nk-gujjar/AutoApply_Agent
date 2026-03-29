@@ -13,6 +13,8 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     error: Optional[str] = None
+    resume_download_url: Optional[str] = None
+    resume_file_name: Optional[str] = None
 
 
 class DebugChatResponse(BaseModel):

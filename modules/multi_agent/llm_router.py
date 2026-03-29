@@ -14,7 +14,7 @@ from modules.core.config.settings import logger, create_llm
 @dataclass
 class ParsedIntent:
     """Result of LLM intent parsing."""
-    primary_intent: str  # fetch_jobs, resume_rewrite, naukri_applier, external_applier, llm_only
+    primary_intent: str  # fetch_jobs, jd_extractor, resume_rewrite, naukri_applier, external_applier, llm_only
     agents_to_call: list[str]  # If multiple agents needed
     parameters: Dict[str, Any]  # Extracted parameters (max_jobs, filters, etc.)
     confidence: float  # 0.0 to 1.0
@@ -91,7 +91,10 @@ Respond in this EXACT JSON format:
         "filters": {{}},
         "dry_run": <boolean or null>,
         "keywords": <string or null>,
-        "include_descriptions": true
+        "include_descriptions": true,
+        "jd_text": <string or null>,
+        "jd_url": <string or null>,
+        "query": <string or null>
     }},
     "confidence": <0.0 to 1.0>,
     "reasoning": "Brief explanation of why this intent was chosen"
@@ -102,6 +105,7 @@ IMPORTANT RULES:
 - `agents_to_call` must contain only relevant agents from the available list.
 - Parameters should match selected agents' capabilities and can be omitted when not needed.
 - "Apply pipeline" or "full automation" can use multiple agents in logical order.
+- Resume tailoring requests should prefer `jd_extractor` then `resume_rewrite`.
 - Tolerate typos and infer intent from semantics, not grammar.
 - If unsure, choose `llm_only`.
 - Always respond with valid JSON only, no extra text"""
@@ -220,6 +224,16 @@ IMPORTANT RULES:
                 params: Dict[str, Any] = {}
                 if agent == "fetch_jobs":
                     params["max_jobs"] = self._extract_max_jobs_fallback(q)
+
+                if agent == "resume_rewrite" and "jd_extractor" in self.agents:
+                    return ParsedIntent(
+                        primary_intent="jd_extractor",
+                        agents_to_call=["jd_extractor", "resume_rewrite"],
+                        parameters=params,
+                        confidence=0.8,
+                        reasoning="Resume tailoring query mapped to jd_extractor -> resume_rewrite pipeline",
+                    )
+
                 return ParsedIntent(
                     primary_intent=agent,
                     agents_to_call=[agent],

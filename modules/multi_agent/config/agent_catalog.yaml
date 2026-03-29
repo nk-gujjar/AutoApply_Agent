@@ -83,6 +83,32 @@ agents:
       - jobs
       - job
 
+  jd_extractor:
+    class_path: modules.multi_agent.agents.jd_extractor_agent.JDExtractorAgent
+    display_name: JD Extractor Agent
+    description: Extracts structured job details from raw JD text or a web URL.
+    skill_name: Job Description Extraction
+    skill_description: Converts unstructured job text into title, description, qualifications and skills.
+    tags:
+      - jd
+      - extract
+      - parser
+      - url
+    examples:
+      - Extract job details from this JD URL
+      - Parse this job description and tailor my resume
+    routing_hints:
+      - jd
+      - job description
+      - extract jd
+      - parse jd
+      - url
+    a2a_intent: extract_job_description
+    allowed_payload_keys:
+      - query
+      - jd_text
+      - jd_url
+
   naukri_applier:
     class_path: modules.multi_agent.agents.naukri_applier_agent.NaukriApplierAgent
     display_name: Naukri Apply Agent

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from dataclasses import asdict
 from typing import Any, Dict
 
@@ -14,6 +15,9 @@ from .llm_router import LLMRouter, ParsedIntent
 from .mcp import MCPClient, MCPServer
 from .models import A2AConversationResult, AgentResult
 from .tools import ToolRegistry, WorkspaceIOTools
+
+
+RESUME_PIPELINE_PATTERN = re.compile(r"\b(resume|cv|tailor|tailored|rewrite)\b", re.IGNORECASE)
 
 
 class ClientAgent:
@@ -213,6 +217,92 @@ class ClientAgent:
         manifest = self.routing_manifest.get(agent_name, {})
         return str(manifest.get("a2a_intent") or agent_name)
 
+    async def _run_resume_with_jd_extraction(
+        self,
+        query: str,
+        correlation_id: str,
+        intent: ParsedIntent,
+    ) -> Dict[str, Any]:
+        extract_payload = {
+            "query": query,
+            **({k: v for k, v in intent.parameters.items() if k in {"jd_text", "jd_url"}} if isinstance(intent.parameters, dict) else {}),
+        }
+
+        extract_step = await self.a2a.ask_agent(
+            sender="client_agent",
+            agent_name="jd_extractor",
+            intent=self._agent_intent_name("jd_extractor"),
+            payload=extract_payload,
+            use_mcp=False,
+            correlation_id=correlation_id,
+        )
+
+        extract_result = extract_step["result"]
+        if not extract_result.get("ok"):
+            return {
+                "status": "failed",
+                "query": query,
+                "selected_flow": "jd_extractor",
+                "response": "Failed to extract job description for resume tailoring.",
+                "correlation_id": correlation_id,
+                "intent_confidence": intent.confidence,
+                "reasoning": intent.reasoning,
+                "result": extract_result,
+            }
+
+        extracted_job = extract_result.get("result", {}).get("data", {}).get("job")
+        if not isinstance(extracted_job, dict):
+            return {
+                "status": "failed",
+                "query": query,
+                "selected_flow": "jd_extractor",
+                "response": "JD extractor did not return a valid structured job payload.",
+                "correlation_id": correlation_id,
+                "intent_confidence": intent.confidence,
+                "reasoning": intent.reasoning,
+                "result": extract_result,
+            }
+
+        rewrite_step = await self.a2a.ask_agent(
+            sender="client_agent",
+            agent_name="resume_rewrite",
+            intent=self._agent_intent_name("resume_rewrite"),
+            payload={"job": extracted_job},
+            use_mcp=False,
+            correlation_id=correlation_id,
+        )
+
+        rewrite_result = rewrite_step["result"]
+        ok = bool(rewrite_result.get("ok"))
+
+        generated = rewrite_result.get("result", {}).get("data", {}).get("generated", [])
+        cv_path = ""
+        if isinstance(generated, list) and generated and isinstance(generated[0], dict):
+            cv_path = str(generated[0].get("cv_path") or "")
+
+        response = "Executed two-agent resume pipeline: jd_extractor -> resume_rewrite."
+        if ok and cv_path:
+            response = (
+                "Executed two-agent resume pipeline: jd_extractor -> resume_rewrite.\n"
+                f"Resume generated: {cv_path}"
+            )
+
+        return {
+            "status": "ok" if ok else "failed",
+            "query": query,
+            "selected_flow": "resume_rewrite",
+            "response": response,
+            "correlation_id": correlation_id,
+            "intent_confidence": intent.confidence,
+            "reasoning": intent.reasoning,
+            "agents_executed": ["jd_extractor", "resume_rewrite"],
+            "result": rewrite_result,
+            "pipeline": {
+                "jd_extractor": extract_result,
+                "resume_rewrite": rewrite_result,
+            },
+        }
+
     async def _run_single_agent_from_intent(
         self, query: str, correlation_id: str, intent: ParsedIntent
     ) -> Dict[str, Any]:
@@ -223,7 +313,13 @@ class ClientAgent:
         if target_agent not in self.agents:
             return await self._handle_llm_only(query, correlation_id, intent)
 
+        if target_agent == "resume_rewrite":
+            return await self._run_resume_with_jd_extraction(query, correlation_id, intent)
+
         payload = self._build_agent_payload(target_agent, intent)
+        if target_agent == "jd_extractor" and not payload.get("query"):
+            payload["query"] = query
+
         step = await self.a2a.ask_agent(
             sender="client_agent",
             agent_name=target_agent,
@@ -238,6 +334,7 @@ class ClientAgent:
 
         response = f"Executed agent: {target_agent}."
         fetch_details: Dict[str, Any] | None = None
+        jd_details: Dict[str, Any] | None = None
         if target_agent == "fetch_jobs" and ok:
             jobs = self._extract_jobs(result)
             source = result.get("result", {}).get("data", {}).get("source", "unknown")
@@ -249,6 +346,44 @@ class ClientAgent:
                 include_descriptions=include_descriptions,
             )
             response = fetch_details["summary"]
+
+        if target_agent == "jd_extractor" and ok:
+            jd_data = result.get("result", {}).get("data", {})
+            job = jd_data.get("job") if isinstance(jd_data, dict) else {}
+            if isinstance(job, dict):
+                title = str(job.get("title") or "Not specified").strip()
+                description = str(job.get("description") or "").strip()
+                qualifications = str(job.get("qualifications") or "").strip()
+                skills = job.get("skills_required") or []
+                if isinstance(skills, str):
+                    skills_list = [s.strip() for s in skills.split(",") if s.strip()]
+                elif isinstance(skills, list):
+                    skills_list = [str(s).strip() for s in skills if str(s).strip()]
+                else:
+                    skills_list = []
+
+                bullets: list[str] = []
+                if description:
+                    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", description) if s.strip()]
+                    for sentence in sentences[:4]:
+                        bullets.append(sentence[:260])
+
+                if qualifications:
+                    q_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", qualifications) if s.strip()]
+                    if q_sentences:
+                        bullets.append("Qualifications: " + q_sentences[0][:220])
+                    else:
+                        bullets.append("Qualifications: " + qualifications[:220])
+
+                if skills_list:
+                    bullets.append("Key Skills: " + ", ".join(skills_list[:12]))
+
+                source = str(jd_data.get("source") or "unknown")
+                response_lines = [f"JD Key Points ({source})", f"Title: {title}"]
+                for bullet in bullets[:6]:
+                    response_lines.append(f"- {bullet}")
+                response = "\n".join(response_lines)
+                jd_details = {"title": title, "skills": skills_list, "source": source}
 
         output = {
             "status": "ok" if ok else "failed",
@@ -263,6 +398,8 @@ class ClientAgent:
         }
         if fetch_details is not None:
             output["fetch_details"] = fetch_details
+        if jd_details is not None:
+            output["jd_details"] = jd_details
         return output
 
     async def handle_query(self, query: str) -> Dict[str, Any]:
@@ -296,8 +433,26 @@ class ClientAgent:
                 intent.reasoning,
             )
 
+            if (
+                intent.primary_intent == "llm_only"
+                and "jd_extractor" in self.agents
+                and "resume_rewrite" in self.agents
+                and RESUME_PIPELINE_PATTERN.search(q)
+            ):
+                forced_intent = ParsedIntent(
+                    primary_intent="jd_extractor",
+                    agents_to_call=["jd_extractor", "resume_rewrite"],
+                    parameters={"query": q},
+                    confidence=max(intent.confidence, 0.8),
+                    reasoning="Deterministic fallback: resume keywords detected, forcing jd_extractor -> resume_rewrite pipeline",
+                )
+                return await self._run_resume_with_jd_extraction(q, correlation_id, forced_intent)
+
             if intent.primary_intent == "llm_only" or not intent.agents_to_call:
                 return await self._handle_llm_only(q, correlation_id, intent)
+
+            if "resume_rewrite" in intent.agents_to_call and "jd_extractor" in self.agents:
+                return await self._run_resume_with_jd_extraction(q, correlation_id, intent)
 
             if len(intent.agents_to_call) > 1:
                 return await self._handle_multi_agent_flow(q, correlation_id, intent)

@@ -43,8 +43,11 @@ def result_to_text(result: Dict[str, Any]) -> str:
     """Format result into displayable text (clean format for users)."""
     response_text = result.get("response", "No response generated")
     error_text = result.get("error")
+    resume_url = result.get("resume_download_url")
     
     output = response_text
+    if resume_url:
+        output += "\n\nResume generated successfully. Use the buttons below to view or download it."
     if error_text:
         output += f"\n\nError: {error_text}"
     
@@ -104,6 +107,22 @@ if query:
                 answer = result_to_text(result)
             
             st.markdown(answer)
+
+            if not debug_mode and result.get("resume_download_url"):
+                resume_url = f"{backend_url.rstrip('/')}{result['resume_download_url']}"
+                resume_name = result.get("resume_file_name", "tailored_resume.pdf")
+                st.link_button("View Resume", resume_url)
+                try:
+                    resume_resp = httpx.get(resume_url, timeout=60)
+                    resume_resp.raise_for_status()
+                    st.download_button(
+                        label="Download Resume",
+                        data=resume_resp.content,
+                        file_name=resume_name,
+                        mime="application/pdf",
+                    )
+                except Exception as exc:
+                    st.warning(f"Resume download is temporarily unavailable: {exc}")
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
 
