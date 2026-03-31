@@ -4,6 +4,8 @@ AutoApply is a FastAPI + Streamlit application that routes user queries through 
 
 ## Current Architecture
 
+![MultiAgent Architecture](./files/archi_diagram.png)
+
 ### Core Agents
 - `jd_extractor`: Extracts structured JD from URL/text/query (prefers JSON-LD JobPosting when available).
 - `resume_rewrite`: Builds tailored resume PDF using extracted JD.
