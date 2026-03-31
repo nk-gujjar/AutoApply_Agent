@@ -1,235 +1,168 @@
+
 %-------------------------
 % Resume in Latex
 % Author : Nitesh Kumar
+% Updated: Full 1-Page Layout with Expanded Technical Points (No Citations)
 %------------------------
 
 \documentclass[a4paper,11pt]{article}
 
 \usepackage{latexsym}
-\usepackage{xcolor}
-\usepackage{float}
-\usepackage{ragged2e}
-% \usepackage[empty]{fullpage}
-\usepackage{tabularx}
 \usepackage{titlesec}
-\usepackage{geometry}
+\usepackage[rgb]{xcolor}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
-% \usepackage{fancyhdr}
-% \usepackage{multicol}
-% \usepackage{graphicx}
-% \usepackage{cfr-lm}
-\usepackage[T1]{fontenc}
-% \newcommand{\resumePOR}[1]{\textbf{#1}}
-% \pagestyle{fancy}
-% \fancyhf{}
-% \renewcommand{\headrulewidth}{0pt}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{geometry}
 
-\geometry{left=0.6cm, top=0.5cm, right=0.6cm, bottom=0.5cm}
+\pagestyle{fancy}
+\fancyhf{} 
+\renewcommand{\headrulewidth}{0pt}
+\geometry{left=0.5in, top=0.3in, right=0.5in, bottom=0.3in}
 
-\titleformat{\section}
-{\vspace{-4pt}\scshape\raggedright\large}
-{}{0em}{}[\titlerule \vspace{-7pt}]
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
 
-\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+% Section formatting
+\titleformat{\section}{
+  \vspace{-5pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
 
-%----------CUSTOM COMMANDS----------
-
-\newcommand{\resumeSubheading}[4]{
-\vspace{0.5mm}\item
-\begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
-\textbf{#1} & \textit{\footnotesize{#4}} \\
-\textit{\footnotesize{#3}} &  \footnotesize{#2}\\
-\end{tabular*}
-\vspace{-2.4mm}
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-1.5pt}}
+  }
 }
 
-\newcommand{\resumePOR}[3]{
-\vspace{0.5mm}\item
-\begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
-\textbf{#1},\hspace{0.3mm}#2 & \textit{\small{#3}}
-\end{tabular*}
-\vspace{-2mm}
+\newcommand{\resumeSubheading}[4]{
+  \vspace{2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-8pt}
+}
+
+% \newcommand{\resumeProjectHeading}[2]{
+%     \item
+%     \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+%       \textbf{#1} & \textit{\small #2} \\
+%     \end{tabular*}\vspace{-2pt}
+% }
+\newcommand{\resumeProjectHeading}[4]{
+    \item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textit{\small #2} \\
+      \textit{\small #3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-2pt}
 }
 
 \newcommand{\resumeProject}[4]{
-\vspace{0.5mm}\item
-\begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
-\textbf{#1} & \textit{\footnotesize{#3}} \\
-\footnotesize{\textit{#2}} & \footnotesize{#4}
-\end{tabular*}
-\vspace{-2.4mm}
+  \vspace{0.5mm}\item
+  \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+    \textbf{#1} & \textit{\small #3} \\
+    \footnotesize{\textit{#2}} & \footnotesize{#4}
+  \end{tabular*}\vspace{-2.4mm}
 }
 
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,labelsep=0mm]}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.1in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-
-\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=3ex, noitemsep]}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-2mm}}
-
-%-----------------------------------
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.2in, itemsep=2pt]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 
 \begin{document}
 
 %----------HEADER----------
-
 \begin{center}
-{\LARGE \textbf{Nitesh Kumar}}\\
-+91-8769443433 \\
-\href{mailto:1niteshgurjar3433@gmail.com}{1niteshgurjar3433@gmail.com} $|$
-\href{https://github.com/nk-gujjar}{GitHub} $|$
-\href{https://leetcode.com/u/nitesh_kumar26/}{LeetCode} $|$
-\href{https://codeforces.com/profile/Mr.BruceWayne}{Codeforces} $|$
-\href{https://www.linkedin.com/in/nitesh-kumar-gurjar/}{LinkedIn}
+    \textbf{\Huge NITESH KUMAR} \\ \vspace{3pt}
+    \small +91-8769443433 $|$ \href{mailto:1niteshgurjar3433@gmail.com}{1niteshgurjar3433@gmail.com} $|$ 
+    \href{https://linkedin.com/in/nitesh-kumar-gurjar/}{LinkedIn} $|$ \href{https://github.com/nk-gujjar}{GitHub} $|$ \href{https://codeforces.com/profile/Mr.BruceWayne}{Codeforces}
 \end{center}
 
-\vspace{-3mm}
-
 %-----------EDUCATION-----------
-
-\section{\textbf{Education}}
-
-\small{
-\begin{tabularx}{\textwidth}{|c|X|c|c|}
-\hline
-\textbf{Degree} & \textbf{Institute/Board} & \textbf{CGPA/Percentage} & \textbf{Year} \\
-\hline
-Bachelor of Technology & Indian Institute of Technology, Ropar & 6.73 & 2021-2025 \\
-\hline
-Senior Secondary & Central Board of Secondary Education & 97\% & 2021 \\
-\hline
-Secondary & Central Board of Secondary Education & 95\% & 2019 \\
-\hline
-\end{tabularx}
-}
-
-\vspace{-3mm}
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Indian Institute of Technology (IIT), Ropar}{2021 -- 2025}
+      {Bachelor of Technology in Computer Science and Engineering}{Ropar, India}
+    \resumeSubheading
+      {Central Board of Secondary Education (CBSE)}{2021}
+      {Senior Secondary (Class XII)}{India}
+  \resumeSubHeadingListEnd
 
 %-----------EXPERIENCE-----------
-
-\section{\textbf{Experience}}
-
-\resumeSubHeadingListStart
-
-\resumeSubheading
-{Infosys}{}
-{Specialist Programmer (Agentic AI)}{Oct. 2025 - Present}
-
-\resumeItemListStart
-\item {Completed advanced training in \textbf{Agentic AI systems} using \textbf{LangChain, LangGraph, MCP and A2A frameworks}.}
-\item {Built \textbf{multi-agent workflows} and \textbf{RAG pipelines} for document processing and knowledge retrieval.}
-\item {Developed backend APIs using \textbf{FastAPI} to support scalable AI-driven applications.}
-\item {Integrated \textbf{Langfuse observability} and \textbf{Guardrails} to monitor and validate \textbf{LLM responses}.}
-\resumeItemListEnd
-
-\vspace{-1mm}
+\section{Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Infosys}{Oct. 2025 -- Present}
+      {Specialist Programmer (Agentic AI)}{Bengaluru, India}
+      \resumeItemListStart
+        \resumeItem{Engineering \textbf{multi-agent workflows} using LangGraph and MCP to automate complex document reasoning.}
+        \resumeItem{Building \textbf{RAG pipelines} and multi-agent systems for document processing and knowledge retrieval.}
+        \resumeItem{Integrating \textbf{Langfuse observability} and Guardrails to monitor and validate LLM responses.}
+        \resumeItem{Developing backend APIs using \textbf{FastAPI} to support scalable AI-driven applications.}
+      \resumeItemListEnd
 
 \resumeSubheading
-{Annam.ai }{}
-{AI Research Intern}{July 2025 - Oct. 2025}
+      {Annam.ai}{July 2025 -- Oct. 2025}
+      {AI Research Intern}{Remote}
+      \resumeItemListStart
+        \resumeItem{Developed \textbf{Swin Transformer} Siamese models achieving \textbf{99.8\% accuracy} and \textbf{0.99 F1-score} on crop datasets by modeling plant growth as a series of weekly stages over a monitoring period.}
+        \resumeItem{Engineered \textbf{Cross-Attention} mechanisms to query bidirectional features between image pairs, reaching \textbf{0.99 recall} and capturing fine-grained morphological variations like leaf texture.}
+        \resumeItem{Utilized \textbf{EfficientNet} embeddings to select centroids for reference images.}
+      \resumeItemListEnd
 
-\resumeItemListStart
-\item {Built deep learning models to identify plant species and estimate growth stages from images.}
-\item {Used computer vision techniques for plant health monitoring and feature extraction.}
-\resumeItemListEnd
+  %   \resumeSubheading
+  %     {Easecruit}{May 2024 -- June 2024}
+  %     {Software Developer Intern}{Remote}
+  %     \resumeItemListStart
+  %       \resumeItem{Architected an automated resume parser using \textbf{Node.js and React} converting PDFs into JSON.}
+  %       \resumeItem{Integrated LLMs to extract GitHub links, repositories, and candidate metadata from resumes.}
+  %       \resumeItem{Optimized backend concurrency, enabling the processing of 100+ resumes in under 15 seconds.}
+  %       \resumeItem{Built a structured pipeline to map candidate metadata into a searchable database format.}
+  %     \resumeItemListEnd
+  % \resumeSubHeadingListEnd
 
-\vspace{-1mm}
-
-\resumeSubheading
-{Easecruit }{}
-{Software Developer Intern}{May 2024 - June 2024}
-
-\resumeItemListStart
-\item {Developed a resume parser using Node.js and React converting resumes into structured JSON.}
-\item {Integrated LLMs to extract GitHub links, repositories and candidate metadata.}
-\item {Optimized backend pipeline to process 100+ resumes in under 15 seconds.}
-\resumeItemListEnd
-
+  \resumeSubheading
+  {Easecruit}{May 2024 -- June 2024}
+  {Software Developer Intern}{Remote}
+  \resumeItemListStart
+    \resumeItem{Architected an automated \textbf{resume parser} using \textbf{Node.js} and \textbf{React}, converting PDFs into structured \textbf{JSON}.}
+    \resumeItem{Integrated \textbf{LLMs} to extract \textbf{GitHub links}, \textbf{repositories}, and \textbf{candidate metadata}.}
+    \resumeItem{Optimized \textbf{backend concurrency}, processing \textbf{100+ resumes} in under \textbf{15 seconds}.}
+    \resumeItem{Designed a \textbf{data pipeline} to map candidate metadata into a \textbf{searchable database}.}
+  \resumeItemListEnd
 \resumeSubHeadingListEnd
-
-\vspace{-6mm}
 
 %-----------PROJECTS-----------
-
-\section{\textbf{Projects}}
-
+\section{Projects}
 {{PROJECTS}}
-% \resumeProject
-% {AI Invoice Auditor}
-% {\textbf{LangChain, LangGraph, MCP, A2A, FastAPI}}
-% {2025}
-% % {\href{https://github.com/nk-gujjar}{\textbf{Github}}}
-
-% \resumeItemListStart
-% \item {Built a \textbf{multi-agent AI system} for automated invoice auditing and validation.}
-% \item {Implemented \textbf{translation, extraction and validation agents} for invoice processing.}
-% \item {Integrated \textbf{RAG retrieval with FAISS} and monitoring via \textbf{Langfuse}.}
-% \resumeItemListEnd
-
-% \resumeProject
-% {Buffalo Recognition \& Re-Identification}
-% {\textbf{Python, TensorFlow, Keras, Neural Networks}}
-% {Sept. 2024 - April 2025}
-% {\href{https://github.com/nk-gujjar/Buffalo-re-identification}{\textbf{Github}}}
-
-% \resumeItemListStart
-% \item {Designed an \textbf{autoencoder-based deep learning model} for buffalo identification using muzzle images.}
-% \item {Implemented \textbf{feature extraction} and \textbf{similarity matching} for re-identification.}
-% \resumeItemListEnd
-
-% \resumeProject
-% {Quick Event}
-% {\textbf{Python, NLP, LLaMA-2, Google Calendar API}}
-% {Jan. 2024 - March 2024}
-% {\href{https://github.com/nk-gujjar/Chatbot}{\textbf{Github}}}
-
-% \resumeItemListStart
-% \item {Developed a \textbf{conversational AI chatbot} for scheduling events through natural language.}
-% \item {Integrated \textbf{Google Calendar API} to automate meeting creation and reminders.}
-% \resumeItemListEnd
-
-
-\vspace{-6mm}
 
 %-----------TECHNICAL SKILLS-----------
-
-\section{\textbf{Technical Skills}}
-{{SKILLS}}
-% \begin{itemize}[leftmargin=*, noitemsep]
-% \item \textbf{Programming:} Python, C/C++, SQL, JavaScript
-% \item \textbf{Agentic AI / Gen. AI:} LangChain, LangGraph, MCP, A2A, RAG, Guardrails, Langfuse
-% \item \textbf{Frameworks:} FastAPI, React.js, Node.js
-% \item \textbf{Machine Learning:} TensorFlow, PyTorch, Keras, OpenCV
-% \item \textbf{Tools:} Git, GitHub, Linux, VS Code, Jupyter Notebook
-% \end{itemize}
-
-\vspace{-4mm}
-
-%-----------POSITIONS-----------
-
-\section{\textbf{Positions of Responsibility}}
-\vspace{-0.4mm}
-
-\resumeSubHeadingListStart
-
-\resumePOR{Secretary}{Outdoor Adventure Club, IIT Ropar}{Oct. 2024 -- May 2025}
-
-\resumePOR{Head Organizer for 5km and 11km Marathon}{Outdoor Adventure Club, IIT Ropar}{Sept. 2024 -- Oct. 2024}
-
-\resumePOR{Team Lead}{Techno-Cultural Fest, Hospitality Team, IIT Ropar}{Feb. 2023 -- March 2023}
-
-\resumeSubHeadingListEnd
-\vspace{-4mm}
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}, itemsep=4pt, parsep=0pt]
+    \small{\item{
+     \textbf{Languages}{: Python, C/C++, SQL, Bash} \\
+     \textbf{AI/ML/CV}{: LangChain, LangGraph, LangFuse, RAG, MCP, A2A, TensorFlow, PyTorch, Keras, OpenCV} \\
+     \textbf{Frameworks/Tools}{: FastAPI, Node.js, React.js, Docker, Git, Linux, MongoDB}
+    }}
+ \end{itemize}
 
 %-----------ACHIEVEMENTS-----------
+\section{Achievements \& Leadership}
+% \begin{itemize}[leftmargin=0.15in, labelsep=5pt, nosep]
 
-\section{\textbf{Achievements}}
 
-\begin{itemize}[leftmargin=*, noitemsep]
-\item \textbf{Codeforces Specialist} | Handle: \href{https://codeforces.com/profile/Mr.BruceWayne}{\textbf{Mr.BruceWayne}}
-\item Ranked in \textbf{Top 0.5\%} in \textbf{JEE Mains and Advanced}
-\item \textbf{UPSC NDA} – Qualified for \textbf{SSB Interview}
-\item \textbf{Quarter Finalist} – \textbf{Inter IIT Sports Meet}
+
+
+\begin{itemize}[leftmargin=0.15in, labelsep=5pt, itemsep=3pt, parsep=0pt]
+    \resumeItem{\textbf{Competitive Programming:} Codeforces Expert (Mr.BruceWayne); Top 0.5\% in JEE Advanced.}
+    \resumeItem{\textbf{Leadership:} Secretary, Outdoor Adventure Club; managed logistics for events with 1000+ attendees.}
+    \resumeItem{\textbf{Achievements:} Team Lead for Techno-Cultural Fest; qualified for UPSC NDA SSB Interview.}
 \end{itemize}
 
 \end{document}

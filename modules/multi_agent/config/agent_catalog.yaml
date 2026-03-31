@@ -1,0 +1,157 @@
+agents:
+  naukri_scraper:
+    class_path: modules.multi_agent.agents.naukri_scraper_agent.NaukriScraperAgent
+    display_name: Naukri Scraper Agent
+    description: Scrapes fresh job postings from Naukri based on role and filter constraints.
+    skill_name: Naukri Job Scraping
+    skill_description: Collects live Naukri jobs and returns structured listings.
+    tags:
+      - scraping
+      - naukri
+      - jobs
+      - live-data
+    examples:
+      - Scrape 20 Python backend jobs from Naukri
+      - Find remote AI engineer jobs from Naukri
+    routing_hints:
+      - scrape
+      - crawl
+      - naukri scrape
+      - collect jobs
+    a2a_intent: scrape_naukri_jobs
+    allowed_payload_keys:
+      - max_jobs
+      - filters
+    default_payload:
+      max_jobs: 10
+      filters: {}
+
+  fetch_jobs:
+    class_path: modules.multi_agent.agents.fetch_jobs_agent.FetchJobsAgent
+    display_name: Fetch Jobs Agent
+    description: Fetches jobs using cache-first retrieval with optional live fallback and filtering.
+    skill_name: Job Fetching and Filtering
+    skill_description: Retrieves and filters jobs for discovery and downstream pipelines.
+    tags:
+      - jobs
+      - fetch
+      - filter
+      - cache
+    examples:
+      - Fetch 5 data engineer jobs
+      - Get jobs with descriptions and salary
+    routing_hints:
+      - fetch
+      - find jobs
+      - search jobs
+      - list jobs
+    a2a_intent: discover_jobs
+    allowed_payload_keys:
+      - max_jobs
+      - filters
+      - roles
+      - include_filtered
+      - use_cache
+      - include_descriptions
+      - keywords
+    default_payload:
+      max_jobs: 5
+      filters: {}
+      use_cache: true
+
+  resume_rewrite:
+    class_path: modules.multi_agent.agents.resume_rewrite_agent.ResumeRewriteAgent
+    display_name: Resume Tailoring Agent
+    description: Generates tailored resume/CV outputs aligned to target job requirements.
+    skill_name: Resume Tailoring
+    skill_description: Creates customized resume artifacts for selected jobs.
+    tags:
+      - resume
+      - cv
+      - tailor
+      - rewrite
+    examples:
+      - Tailor resume for senior Python engineer
+      - Generate 3 job-specific CVs
+    routing_hints:
+      - resume
+      - cv
+      - tailor
+      - rewrite
+    a2a_intent: tailor_resume
+    allowed_payload_keys:
+      - jobs
+      - job
+
+  jd_extractor:
+    class_path: modules.multi_agent.agents.jd_extractor_agent.JDExtractorAgent
+    display_name: JD Extractor Agent
+    description: Extracts structured job details from raw JD text or a web URL.
+    skill_name: Job Description Extraction
+    skill_description: Converts unstructured job text into title, description, qualifications and skills.
+    tags:
+      - jd
+      - extract
+      - parser
+      - url
+    examples:
+      - Extract job details from this JD URL
+      - Parse this job description and tailor my resume
+    routing_hints:
+      - jd
+      - job description
+      - extract jd
+      - parse jd
+      - url
+    a2a_intent: extract_job_description
+    allowed_payload_keys:
+      - query
+      - jd_text
+      - jd_url
+
+  naukri_applier:
+    class_path: modules.multi_agent.agents.naukri_applier_agent.NaukriApplierAgent
+    display_name: Naukri Apply Agent
+    description: Automates job applications on Naukri using configured account credentials.
+    skill_name: Naukri Application Automation
+    skill_description: Submits Naukri applications and returns apply status.
+    tags:
+      - apply
+      - naukri
+      - automation
+      - submission
+    examples:
+      - Apply on Naukri for fetched jobs
+      - Run Naukri apply pipeline
+    routing_hints:
+      - apply naukri
+      - naukri apply
+      - submit naukri
+    a2a_intent: apply_naukri
+    allowed_payload_keys:
+      - jobs
+      - file_path
+
+  external_applier:
+    class_path: modules.multi_agent.agents.external_applier_agent.ExternalApplierAgent
+    display_name: External Apply Agent
+    description: Automates direct company-site applications for external job links.
+    skill_name: External Site Application
+    skill_description: Processes external application flows and tracks outcomes.
+    tags:
+      - apply
+      - external
+      - company-site
+      - direct-application
+    examples:
+      - Apply to external links for backend jobs
+      - Run direct company applications
+    routing_hints:
+      - external apply
+      - company site
+      - direct apply
+    a2a_intent: apply_external
+    allowed_payload_keys:
+      - dry_run
+    default_payload:
+      dry_run: false

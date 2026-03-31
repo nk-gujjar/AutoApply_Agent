@@ -62,4 +62,9 @@ langchain-groq
 langchain-community
 langchain-classic
 langchain-ollama
+streamlit
+fastapi
+uvicorn
+a2a-sdk>=1.0.0
+PyYAML>=6.0.0
 
