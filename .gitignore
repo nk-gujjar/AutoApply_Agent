@@ -36,6 +36,8 @@ data/*.tmp
 data/*.bak
 data/*.png
 autoapply_session.session
+tg_session.session
+tg_user_session.session
 
 # Keep important data snapshots out of git
 data/application_log.txt

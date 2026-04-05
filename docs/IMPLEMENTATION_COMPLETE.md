@@ -17,3 +17,11 @@
 - [x] LLM intent parsing.
 - [x] Catalog-driven routing manifest.
 - [x] Multi-agent A2A sequence support.
+- [x] Telegram scraping agent in routing catalog.
+- [x] Telegram agent retry support (up to 5 attempts).
+
+## Memory and state
+
+- [x] Session-scoped chat memory.
+- [x] Persistent chat memory on disk under `data/chat_memory`.
+- [x] JD context persistence (last JD link/details).

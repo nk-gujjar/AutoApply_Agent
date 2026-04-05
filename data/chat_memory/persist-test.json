@@ -1,0 +1,25 @@
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "hello"
+    },
+    {
+      "type": "ai",
+      "content": "hi there"
+    },
+    {
+      "type": "human",
+      "content": "hello"
+    },
+    {
+      "type": "ai",
+      "content": "hi there"
+    }
+  ],
+  "context": {
+    "last_jd_link": "",
+    "last_jd": {},
+    "last_jd_source": ""
+  }
+}

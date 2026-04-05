@@ -1,4 +1,32 @@
 agents:
+  telegram_scraper:
+    class_path: modules.multi_agent.agents.telegram_scraper_agent.TelegramScraperAgent
+    display_name: Telegram Scraper Agent
+    description: Scrapes jobs from Telegram channels and parses structured role data.
+    skill_name: Telegram Job Scraping
+    skill_description: Reads Telegram channel posts and extracts job fields with links and summaries.
+    tags:
+      - telegram
+      - scraping
+      - jobs
+      - channel
+    examples:
+      - Scrape 15 jobs from @remotejobs on Telegram
+      - Fetch Telegram jobs from @pythonjobs
+    routing_hints:
+      - telegram
+      - telegram jobs
+      - telegram scrape
+      - channel jobs
+    a2a_intent: scrape_telegram_jobs
+    allowed_payload_keys:
+      - channel
+      - limit
+      - max_jobs
+      - session_name
+    default_payload:
+      limit: 20
+
   naukri_scraper:
     class_path: modules.multi_agent.agents.naukri_scraper_agent.NaukriScraperAgent
     display_name: Naukri Scraper Agent

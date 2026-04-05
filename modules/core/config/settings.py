@@ -14,6 +14,16 @@ from langchain_ollama import ChatOllama
 # Load environment variables from repository root .env file
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
+
+def _safe_int_env(name: str):
+    value = os.getenv(name)
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
 class Config:
     """Configuration class for the AutoApply Agent"""
     
@@ -25,8 +35,10 @@ class Config:
     TEMPLATES_DIR = BASE_DIR / "templates"
     
     # Telegram configuration
-    TELEGRAM_API_ID = os.getenv("TELEGRAM_API_ID")
+    TELEGRAM_API_ID = _safe_int_env("TELEGRAM_API_ID")
     TELEGRAM_API_HASH = os.getenv("TELEGRAM_API_HASH")
+    TELEGRAM_SESSION_NAME = os.getenv("TELEGRAM_SESSION_NAME", "tg_user_session")
+    PHONE_NUMBER = os.getenv("PHONE_NUMBER")
     TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
     
     # AI API configuration

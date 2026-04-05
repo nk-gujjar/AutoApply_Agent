@@ -14,7 +14,7 @@ from modules.core.config.settings import logger, create_llm
 @dataclass
 class ParsedIntent:
     """Result of LLM intent parsing."""
-    primary_intent: str  # fetch_jobs, jd_extractor, resume_rewrite, naukri_applier, external_applier, llm_only
+    primary_intent: str  # fetch_jobs, telegram_scraper, jd_extractor, resume_rewrite, naukri_applier, external_applier, llm_only
     agents_to_call: list[str]  # If multiple agents needed
     parameters: Dict[str, Any]  # Extracted parameters (max_jobs, filters, etc.)
     confidence: float  # 0.0 to 1.0

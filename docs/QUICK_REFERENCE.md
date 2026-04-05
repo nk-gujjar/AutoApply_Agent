@@ -28,3 +28,17 @@
   "session_id": "demo"
 }
 ```
+
+## Telegram query example
+
+```json
+{
+  "query": "give me the 5 jobs of the telegram group @jobs_and_internships_updates",
+  "session_id": "demo"
+}
+```
+
+## Memory behavior
+
+- Reuse same `session_id` to continue the same chat.
+- Memory is persisted in `data/chat_memory/<session_id>.json`.

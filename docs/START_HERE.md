@@ -22,10 +22,20 @@ curl -s -X POST http://127.0.0.1:8000/chat \
   -d '{"query":"find the jd from https://apply.careers.microsoft.com/careers/job/1970393556640618","session_id":"demo"}'
 ```
 
-## 4) Core behavior
+## 4) Telegram flow
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"give me the 5 jobs of the telegram group @jobs_and_internships_updates","session_id":"demo"}'
+```
+
+## 5) Core behavior
 
 - Routing uses `LLMRouter` and catalog hints/default payloads.
 - Resume intent runs `jd_extractor` then `resume_rewrite`.
+- Telegram intent runs `telegram_scraper` with retry handling.
 - `fetch_jobs` is cache-first with live fallback.
+- Chat memory persists by `session_id` in `data/chat_memory`.
 - `/chat` returns clean user-facing response and optional resume metadata.
 - `/chat/debug` returns technical response payload.

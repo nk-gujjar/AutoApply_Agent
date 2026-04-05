@@ -22,9 +22,21 @@ Response:
 }
 ```
 
+Notes:
+- `session_id` controls per-session conversation memory.
+- Chat memory is persisted on disk in [data/chat_memory](data/chat_memory).
+
 ## `POST /chat/debug`
 
-Response includes `status`, `selected_flow`, `response`, `result`, `error`.
+Response includes: `status`, `query`, `selected_flow`, `response`, `result`, `error`.
+
+Typical `selected_flow` values:
+- `llm_only`
+- `fetch_jobs`
+- `telegram_scraper`
+- `jd_extractor`
+- `resume_rewrite`
+- `multi_agent_pipeline`
 
 ## Resume artifacts
 

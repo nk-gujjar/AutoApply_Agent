@@ -347,6 +347,23 @@ class ClientAgent:
             )
             response = fetch_details["summary"]
 
+        if target_agent == "telegram_scraper" and ok:
+            tg_data = result.get("result", {}).get("data", {})
+            jobs = tg_data.get("jobs", []) if isinstance(tg_data, dict) else []
+            channel = str(tg_data.get("channel") or payload.get("channel") or "unknown").lstrip("@")
+
+            lines = [f"Found {len(jobs)} Telegram jobs from @{channel}:"]
+            for index, job in enumerate(jobs, start=1):
+                if not isinstance(job, dict):
+                    continue
+                role = str(job.get("role") or "N/A")
+                company = str(job.get("company") or "N/A")
+                apply_link = str(job.get("apply_link") or "N/A")
+                lines.append(f"{index}. {role} @ {company}")
+                lines.append(f"   Apply: {apply_link}")
+
+            response = "\n".join(lines)
+
         if target_agent == "jd_extractor" and ok:
             jd_data = result.get("result", {}).get("data", {})
             job = jd_data.get("job") if isinstance(jd_data, dict) else {}

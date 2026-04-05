@@ -2,6 +2,7 @@
 Multi-Agent Entry Point for AutoApply Agent
 
 Client agent routes tasks to specialized agents:
+- TelegramScraper
 - NaukriScraper
 - FetchJobs
 - ResumeRewrite
@@ -28,6 +29,7 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=[
             "pipeline",
             "query",
+            "telegram-scraper",
             "naukri-scraper",
             "fetch-jobs",
             "resume-rewrite",
@@ -40,6 +42,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--query", type=str, default="")
     parser.add_argument("--max-jobs", type=int, default=10)
+    parser.add_argument("--channel", type=str, default="")
     parser.add_argument("--mcp", action="store_true", help="Route via MCP server tools")
     parser.add_argument("--include-filtered", action="store_true")
     return parser
@@ -61,6 +64,16 @@ async def _run_mode(client: ClientAgent, mode: str, args: argparse.Namespace) ->
 
     if mode == "query":
         return await client.handle_query(args.query)
+
+    if mode == "telegram-scraper":
+        return await client.route(
+            "telegram_scraper",
+            {
+                "channel": args.channel,
+                "limit": args.max_jobs,
+            },
+            use_mcp=args.mcp,
+        )
 
     if mode == "naukri-scraper":
         return await client.route(

@@ -13,6 +13,8 @@ from .state import (
     LAST_JD_DETAILS_PATTERN,
     LAST_JD_LINK_PATTERN,
     LAST_QUERY_PATTERN,
+    add_ai_chat_message,
+    add_user_chat_message,
     client_agent,
     get_chat_memory,
     get_last_conversation,
@@ -83,8 +85,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
                 if last_query
                 else "I don't have any previous query in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return ChatResponse(response=response_text, error=None)
 
         if LAST_CONVERSATION_PATTERN.match(query):
@@ -96,8 +98,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
                 if last_conversation
                 else "I don't have any previous conversation in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return ChatResponse(response=response_text, error=None)
 
         if LAST_JD_DETAILS_PATTERN.match(query):
@@ -125,8 +127,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
             else:
                 response_text = "I don't have any extracted JD in memory yet. Please share a JD link or JD text first."
 
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return ChatResponse(response=response_text, error=None)
 
         if LAST_JD_LINK_PATTERN.match(query):
@@ -136,8 +138,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
                 if last_jd_link
                 else "I don't have any JD link in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return ChatResponse(response=response_text, error=None)
 
         result = await client_agent.handle_query(query=query)
@@ -147,8 +149,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
         resume_file_name = resume_path.name if resume_path else None
         update_session_jd_context(request.session_id, query, result)
 
-        memory.add_user_message(query)
-        memory.add_ai_message(response_text)
+        add_user_chat_message(request.session_id, query)
+        add_ai_chat_message(request.session_id, response_text)
 
         return ChatResponse(
             response=response_text,
@@ -158,8 +160,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
         )
     except Exception as exc:
         fallback = "I encountered an error processing your query. Please try again."
-        memory.add_user_message(query)
-        memory.add_ai_message(fallback)
+        add_user_chat_message(request.session_id, query)
+        add_ai_chat_message(request.session_id, fallback)
         return ChatResponse(
             response=fallback,
             error=str(exc),
@@ -179,8 +181,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
                 if last_query
                 else "I don't have any previous query in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return DebugChatResponse(
                 status="ok",
                 query=query,
@@ -203,8 +205,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
                 if last_conversation
                 else "I don't have any previous conversation in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return DebugChatResponse(
                 status="ok",
                 query=query,
@@ -243,8 +245,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
             else:
                 response_text = "I don't have any extracted JD in memory yet. Please share a JD link or JD text first."
 
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return DebugChatResponse(
                 status="ok",
                 query=query,
@@ -265,8 +267,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
                 if last_jd_link
                 else "I don't have any JD link in memory yet."
             )
-            memory.add_user_message(query)
-            memory.add_ai_message(response_text)
+            add_user_chat_message(request.session_id, query)
+            add_ai_chat_message(request.session_id, response_text)
             return DebugChatResponse(
                 status="ok",
                 query=query,
@@ -283,8 +285,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
         result = await client_agent.handle_query(query=query)
         response_text = result.get("response", "")
         update_session_jd_context(request.session_id, query, result)
-        memory.add_user_message(query)
-        memory.add_ai_message(response_text)
+        add_user_chat_message(request.session_id, query)
+        add_ai_chat_message(request.session_id, response_text)
         return DebugChatResponse(
             response=result.get("response", ""),
             status=result.get("status", "ok"),
@@ -295,8 +297,8 @@ async def chat_debug(request: ChatRequest) -> DebugChatResponse:
         )
     except Exception as exc:
         fallback = "Backend failed to process the query."
-        memory.add_user_message(query)
-        memory.add_ai_message(fallback)
+        add_user_chat_message(request.session_id, query)
+        add_ai_chat_message(request.session_id, fallback)
         return DebugChatResponse(
             status="failed",
             query=query,

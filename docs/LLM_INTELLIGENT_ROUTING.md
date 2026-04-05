@@ -12,4 +12,12 @@ Routing combines:
 2. Catalog constraints from `agent_catalog.yaml`.
 3. Keyword fallback when parsing fails.
 
-Normalization includes payload key filtering, defaults merge, and type cleanup.
+Normalization includes:
+- payload key filtering by agent `allowed_payload_keys`
+- defaults merge from catalog `default_payload`
+- type cleanup and safe bounds for numeric values
+
+Notable current behavior:
+- Resume-tailoring requests bias to `jd_extractor -> resume_rewrite`.
+- Telegram requests route to `telegram_scraper`.
+- Telegram job count prefers `max_jobs` from query over default `limit`.
