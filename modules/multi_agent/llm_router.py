@@ -23,11 +23,22 @@ class ParsedIntent:
 
 class LLMRouter:
     """Uses LLM to intelligently parse intent and extract parameters from user queries."""
+
+    MAX_QUERY_CHARS = 1800
+    MAX_HISTORY_MESSAGES = 4
+    MAX_HISTORY_MESSAGE_CHARS = 180
     
     def __init__(self, routing_manifest: Dict[str, Dict[str, Any]]):
         self.llm = create_llm()
         self.routing_manifest = routing_manifest
         self.agents = list(routing_manifest.keys())
+
+    @staticmethod
+    def _truncate_text(text: str, limit: int) -> str:
+        value = str(text or "").strip()
+        if len(value) <= limit:
+            return value
+        return value[:limit].rstrip() + " ...[truncated]"
     
     async def parse_intent(
         self,
@@ -53,6 +64,7 @@ class LLMRouter:
             
             # Create a structured prompt for the LLM
             prompt = self._create_routing_prompt(query, chat_history)
+            logger.info("  📏 Intent prompt length: %s chars", len(prompt))
             
             # Run LLM in thread pool to avoid blocking event loop
             response = await asyncio.to_thread(self.llm.invoke, prompt)
@@ -88,6 +100,7 @@ class LLMRouter:
         chat_history: Optional[List[Dict[str, str]]] = None,
     ) -> str:
         """Create a structured prompt for LLM to parse intent."""
+        compact_query = self._truncate_text(query, self.MAX_QUERY_CHARS)
         agent_profiles = {
             agent: {
                 "description": details.get("description", ""),
@@ -103,9 +116,10 @@ class LLMRouter:
         history_section = ""
         if chat_history:
             history_lines = []
-            for msg in chat_history:
+            recent_history = chat_history[-self.MAX_HISTORY_MESSAGES :]
+            for msg in recent_history:
                 role = "User" if msg.get("role") == "human" else "Assistant"
-                content = str(msg.get("content", ""))[:300]
+                content = self._truncate_text(str(msg.get("content", "")), self.MAX_HISTORY_MESSAGE_CHARS)
                 history_lines.append(f"  {role}: {content}")
             history_section = (
                 "\n\nRecent Conversation Context (use this to resolve references like 'those', 'them', 'it', 'apply to those'):\n"
@@ -121,7 +135,7 @@ class LLMRouter:
 Available agents and capabilities:
 {json.dumps(agent_profiles, indent=2)}
 
-User Query: "{query}"
+User Query: "{compact_query}"
 
 Respond in this EXACT JSON format:
 {{

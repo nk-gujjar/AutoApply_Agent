@@ -64,19 +64,33 @@ class ClientAgent:
         self, jobs: list[Dict[str, Any]], max_items: int = 5, source: str = "unknown", include_descriptions: bool = False
     ) -> Dict[str, Any]:
         """
-        Reformat job list into minimal response with only name and description.
+        Reformat job list into a concise response.
+        When descriptions are requested, always include apply link with it.
         """
         trimmed = jobs[:max_items]
         concise_jobs = []
 
         for job in trimmed:
-            description = job.get("jd_summary") or job.get("description") or "Description not available"
-            concise_jobs.append(
-                {
-                    "name": job.get("title", "N/A"),
-                    "description": description,
-                }
+            description = "Description not available"
+            if include_descriptions:
+                description = job.get("jd_summary") or job.get("description") or "Description not available"
+
+            apply_link = (
+                job.get("apply_link")
+                or job.get("link")
+                or job.get("external_apply_link")
+                or job.get("url")
+                or "N/A"
             )
+
+            concise_job = {
+                "name": job.get("title") or job.get("role") or "N/A",
+                "apply_link": apply_link,
+            }
+            if include_descriptions:
+                concise_job["description"] = description
+
+            concise_jobs.append(concise_job)
 
         if not concise_jobs:
             return {
@@ -88,8 +102,11 @@ class ClientAgent:
         lines = [f"Found {len(concise_jobs)} jobs:\n"]
 
         for index, job in enumerate(concise_jobs, start=1):
-            desc = (job["description"] or "Description not available").strip()
-            lines.append(f"{index}. {job['name']}\nDescription: {desc}\n")
+            lines.append(f"{index}. {job['name']}")
+            if include_descriptions:
+                desc = (job.get("description") or "Description not available").strip()
+                lines.append(f"Description: {desc}")
+            lines.append(f"Apply Link: {job.get('apply_link', 'N/A')}\n")
 
         return {
             "summary": "".join(lines),
@@ -373,8 +390,10 @@ class ClientAgent:
                     continue
                 role = str(job.get("role") or "N/A")
                 company = str(job.get("company") or "N/A")
+                summary = str(job.get("summary") or job.get("description") or "Description not available").strip()
                 apply_link = str(job.get("apply_link") or "N/A")
                 lines.append(f"{index}. {role} @ {company}")
+                lines.append(f"   Description: {summary}")
                 lines.append(f"   Apply: {apply_link}")
 
             response = "\n".join(lines)

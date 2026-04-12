@@ -16,6 +16,7 @@ from ..models import AgentResult
 
 class JDExtractorAgent(BaseAgent):
     name = "jd_extractor"
+    MAX_LLM_JD_CHARS = 3500
 
     def __init__(self) -> None:
         self.llm = create_llm(temperature=0)
@@ -209,6 +210,7 @@ class JDExtractorAgent(BaseAgent):
         }
 
     async def _llm_extract(self, raw_text: str) -> Dict[str, Any]:
+        llm_input = (raw_text or "")[: self.MAX_LLM_JD_CHARS]
         prompt = f"""
 Extract a structured Job Description from the text below.
 Return valid JSON ONLY with this exact schema:
@@ -227,7 +229,7 @@ Rules:
 - Return 6-12 most relevant skills.
 
 TEXT:
-{raw_text[:12000]}
+{llm_input}
 """
         response = await self.llm.ainvoke(prompt)
         content = response.content if hasattr(response, "content") else str(response)

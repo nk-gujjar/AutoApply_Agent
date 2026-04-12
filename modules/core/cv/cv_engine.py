@@ -637,7 +637,7 @@ if __name__ == "__main__":
 #         # Groq LLM
 #         self.llm = ChatGroq(
 #             groq_api_key=config.GROQ_API_KEY,
-#             model_name="llama-3.1-8b-instant",
+#             model_name="groq/compound",
 #             temperature=0.3
 #         )
 
@@ -1089,7 +1089,7 @@ if __name__ == "__main__":
 
 #         self.llm = ChatGroq(
 #             groq_api_key=config.GROQ_API_KEY,
-#             model_name="llama3-70b-8192",
+#             model_name="mixtral-8x7b-32768",
 #             temperature=0.3
 #         )
 

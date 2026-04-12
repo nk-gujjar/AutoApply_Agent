@@ -10,3 +10,13 @@
 [SKIPPED] AI Engineer | Onit | https://jobs.lever.co/onit/561f639d-692b-4f78-9bcd-85b6da768a24
 [SKIPPED] Associate AI Engineer India | Cornerstone | https://cornerstone.csod.com/ux/ats/careersite/2/home/requisition/11140?c=cornerstone&sq=req11140
 [SKIPPED] AI Engineer | Innoplexus | https://partex.ai/en/careers
+[SKIPPED] Gen AI Engineer | Dentsu Webchutney | https://dentsuaegis.wd3.myworkdayjobs.com/en-US/DAN_GLOBAL/job/Pune/Developer-Engineer_R1104744
+[SKIPPED] AI Engineer | Marsh Risk | https://careers.marsh.com/global/en/job/R_332280
+[SKIPPED] AI Engineer | Acenet | https://careers.acenet.io/network/open_positions/101451-ai-engineer/
+[SKIPPED] AI Engineer (n8n) | Acenet | https://careers.acenet.io/network/open_positions/101453-ai-engineer-n8n/
+[SKIPPED] Conversational AI Engineer | Sykes | https://jobs.foundever.com/job/Conversational-AI-Engineer/1340504100/
+[SKIPPED] Agentic AI Engineer | Flytbase Labs | https://www.naukri.com/job-listings-agentic-ai-engineer-flytbase-labs-pune-0-to-1-years-080426500969
+[SKIPPED] AI Engineer | Freshprints | https://job-boards.greenhouse.io/freshprints?error=true
+[SKIPPED] AI Engineer | Onit | https://jobs.lever.co/onit/561f639d-692b-4f78-9bcd-85b6da768a24
+[SKIPPED] Associate AI Engineer India | Cornerstone | https://cornerstone.csod.com/ux/ats/careersite/2/home/requisition/11140?c=cornerstone&sq=req11140
+[SKIPPED] AI Engineer | Innoplexus | https://partex.ai/en/careers
