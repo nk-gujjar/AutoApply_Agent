@@ -61,7 +61,6 @@ google-generativeai
 langchain-groq
 langchain-community
 langchain-classic
-langchain-ollama
 streamlit
 fastapi
 uvicorn

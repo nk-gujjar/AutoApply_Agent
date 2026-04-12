@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 from typing import List, Optional
 import logging
 from langchain_groq import ChatGroq
-from langchain_ollama import ChatOllama
 
 # Load environment variables from repository root .env file
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
@@ -48,12 +47,9 @@ class Config:
     # AI API configuration
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").strip().lower()
-    DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "llama3.2")
-    GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
-    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
-    OLLAMA_BASE_URL = "http://localhost:11434"  # default Ollama port
-    DEFAULT_LLAMA_MODEL = "llama3.2"
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq").strip().lower()
+    DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "groq/compound")
+    GROQ_MODEL = os.getenv("GROQ_MODEL", "groq/compound")
 
     # Naukri configuration
     NAUKRI_EMAIL = os.getenv("NAUKRI_EMAIL")
@@ -94,8 +90,8 @@ class Config:
 
         if cls.LLM_PROVIDER == "groq" and not cls.GROQ_API_KEY:
             missing_configs.append("GROQ_API_KEY (required when LLM_PROVIDER=groq)")
-        elif cls.LLM_PROVIDER not in {"groq", "ollama"}:
-            missing_configs.append("LLM_PROVIDER must be one of: groq, ollama")
+        elif cls.LLM_PROVIDER != "groq":
+            missing_configs.append("LLM_PROVIDER must be: groq")
         
         return missing_configs
     
@@ -141,9 +137,8 @@ def create_llm(
 
     Supported providers:
     - `groq`
-    - `ollama`
     """
-    selected_provider = (provider or config.LLM_PROVIDER or "ollama").strip().lower()
+    selected_provider = (provider or config.LLM_PROVIDER or "groq").strip().lower()
 
     if selected_provider == "groq":
         selected_model = model or config.GROQ_MODEL or config.DEFAULT_LLM_MODEL
@@ -153,31 +148,16 @@ def create_llm(
             temperature=temperature,
         )
 
-    if selected_provider == "ollama":
-        selected_model = model or config.OLLAMA_MODEL or config.DEFAULT_LLM_MODEL
-        return ChatOllama(
-            model=selected_model,
-            temperature=temperature,
-            base_url=config.OLLAMA_BASE_URL,
-        )
-
     raise ValueError(
-        f"Unsupported LLM provider '{selected_provider}'. Use one of: groq, ollama"
+        f"Unsupported LLM provider '{selected_provider}'. Use: groq"
     )
 
 
 def get_active_llm_config() -> dict:
     """Return active provider/model info for diagnostics and debug UIs."""
-    provider = (config.LLM_PROVIDER or "ollama").strip().lower()
-    if provider == "groq":
-        return {
-            "provider": "groq",
-            "model": config.GROQ_MODEL or config.DEFAULT_LLM_MODEL,
-        }
     return {
-        "provider": "ollama",
-        "model": config.OLLAMA_MODEL or config.DEFAULT_LLM_MODEL,
-        "base_url": config.OLLAMA_BASE_URL,
+        "provider": "groq",
+        "model": config.GROQ_MODEL or config.DEFAULT_LLM_MODEL,
     }
 
 logger = logging.getLogger(__name__)

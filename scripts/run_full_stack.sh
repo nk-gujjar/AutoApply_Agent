@@ -3,8 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-"$ROOT_DIR/scripts/start_ollama_safe.sh"
-
 # Free backend port if stale process exists.
 if lsof -ti tcp:8000 >/dev/null 2>&1; then
 	echo "Port 8000 is busy. Stopping existing process(es)..."

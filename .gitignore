@@ -30,6 +30,7 @@ env/
 # Project runtime artifacts
 logs/
 output/
+data/
 *.log
 data/*.log
 data/*.tmp
