@@ -21,7 +21,7 @@ chat_memories: Dict[str, InMemoryChatMessageHistory] = {}
 chat_session_context: Dict[str, Dict[str, Any]] = {}
 _memory_lock = RLock()
 
-CHAT_MEMORY_DIR = config.DATA_DIR / "chat_memory"
+CHAT_MEMORY_DIR = config.MEMORY_DIR
 CHAT_MEMORY_DIR.mkdir(parents=True, exist_ok=True)
 
 URL_PATTERN = re.compile(r"https?://[^\s)]+", re.IGNORECASE)

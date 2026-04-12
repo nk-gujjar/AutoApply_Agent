@@ -55,10 +55,10 @@ class NaukriApplier:
         self.email         = email
         self.password      = password
         self.login_url     = "https://www.naukri.com/nlogin/login"
-        self.applied_file  = config.DATA_DIR / "applied_jobs.txt"
-        self.failed_file   = config.DATA_DIR / "failed_jobs.txt"
-        self.external_file = config.DATA_DIR / "external_jobs.txt"
-        self.skipped_file  = config.DATA_DIR / "skipped_jobs.txt"
+        self.applied_file  = config.JOBS_DIR / "applied_jobs.txt"
+        self.failed_file   = config.JOBS_DIR / "failed_jobs.txt"
+        self.external_file = config.JOBS_DIR / "external_jobs.txt"
+        self.skipped_file  = config.JOBS_DIR / "skipped_jobs.txt"
 
         self.llm = create_llm(temperature=0)
 
@@ -263,7 +263,7 @@ Answer:"""
         """
         try:
             html = await page.locator("div.chatbot_MessageContainer").inner_html()
-            path = Path(f"./data/chatbot_debug_{label}.html")
+            path = config.DEBUG_DIR / f"chatbot_debug_{label}.html"
             path.write_text(html, encoding="utf-8")
             logger.info(f"Chatbot HTML dumped → {path}")
         except Exception as e:
@@ -271,7 +271,7 @@ Answer:"""
 
         # Also screenshot
         try:
-            await page.screenshot(path=f"./data/chatbot_debug_{label}.png", full_page=False)
+            await page.screenshot(path=str(config.DEBUG_DIR / f"chatbot_debug_{label}.png"), full_page=False)
         except Exception:
             pass
 
@@ -560,7 +560,7 @@ Answer:"""
                     return "already_applied", REASON_ALREADY_APPLIED
 
                 logger.warning("Apply button not found.")
-                await page.screenshot(path=f"./data/debug_{self._safe_name(job['company'])}.png")
+                await page.screenshot(path=str(config.DEBUG_DIR / f"debug_{self._safe_name(job['company'])}.png"))
                 return "failed", REASON_NO_APPLY_BTN
 
             # ── Watch for external tab (Easy Apply only — skip external redirects) ──
@@ -607,7 +607,7 @@ Answer:"""
                 return ("applied" if success else "failed"), reason
 
             logger.warning("Nothing handled after Apply click.")
-            await page.screenshot(path=f"./data/debug_{self._safe_name(job['company'])}.png")
+            await page.screenshot(path=str(config.DEBUG_DIR / f"debug_{self._safe_name(job['company'])}.png"))
             return "failed", REASON_NOTHING_HANDLED
 
         except Exception as e:
@@ -665,18 +665,25 @@ Answer:"""
             else:
                 logger.info(f"  ↳ Duplicate skipped: {job['title']} @ {job['company']}")
 
-        # Filter blocked
+        # Filter blocked and external
         filtered = []
         for job in unique_jobs:
+            apply_type = str(job.get("apply_type", "")).lower()
+
             if self.is_blocked(job.get("company", "")):
                 logger.info(f"  ⛔ Blocked company skipped: {job['company']}")
                 await self.log_result(job, "skipped", "blocked_company")
                 summary["skipped_blocked"] += 1
                 summary["details"].append({"title": job.get("title"), "company": job.get("company"), "status": "skipped", "reason": "blocked_company"})
+            elif apply_type != "easy_apply":
+                logger.info(f"  ⏭️ Non-easy apply job skipped: {job['title']} @ {job['company']} (type: {apply_type})")
+                await self.log_result(job, "skipped", f"not_easy_apply_{apply_type}")
+                summary["skipped_external"] += 1
+                summary["details"].append({"title": job.get("title"), "company": job.get("company"), "status": "skipped", "reason": "not_easy_apply"})
             else:
                 filtered.append(job)
 
-        summary["total"] = len(filtered) + summary["skipped_blocked"]
+        summary["total"] = len(filtered) + summary["skipped_blocked"] + summary["skipped_external"]
 
         logger.info("")
         logger.info("━" * 55)

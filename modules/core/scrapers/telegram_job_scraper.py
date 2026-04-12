@@ -27,7 +27,7 @@ class TelegramJobScraper:
             api_hash=config.TELEGRAM_API_HASH,
         )
 
-        self.output_file = Path(output_file) if output_file else config.DATA_DIR / "telegram_jobs.txt"
+        self.output_file = Path(output_file) if output_file else config.JOBS_DIR / "telegram_jobs.txt"
         self.output_file.parent.mkdir(parents=True, exist_ok=True)
 
         self.llm = create_llm(temperature=0)

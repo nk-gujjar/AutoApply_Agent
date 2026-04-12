@@ -417,11 +417,14 @@ class ClientAgent:
                 response = "\n".join(response_lines)
                 jd_details = {"title": title, "skills": skills_list, "source": source}
 
+        logger.info("  🤖 Generating conversational summary from agent output...")
+        response_text = await self._generate_conversational_summary(query, response)
+
         output = {
             "status": "ok" if ok else "failed",
             "query": query,
             "selected_flow": target_agent,
-            "response": response,
+            "response": response_text,
             "correlation_id": correlation_id,
             "intent_confidence": intent.confidence,
             "reasoning": intent.reasoning,
@@ -564,6 +567,28 @@ class ClientAgent:
                 "correlation_id": correlation_id,
             }
 
+    async def _generate_conversational_summary(self, query: str, data_text: str) -> str:
+        llm = create_llm(temperature=0.3)
+        from langchain_core.prompts import PromptTemplate
+        from langchain_core.output_parsers import StrOutputParser
+        
+        prompt = PromptTemplate.from_template(
+            "You are the AutoApply job assistant. The user asked or said: '{query}'\n\n"
+            "The system performed an action and returned this data:\n{data}\n\n"
+            "Please provide a helpful, natural, and conversational response to the user. "
+            "If the data contains a list of jobs or an application summary, present it cleanly. "
+            "If the user asked a question, answer it using the data provided. "
+            "Keep the response professional but friendly. Use simple markdown formatting like bolding or bullet points if it helps readability.\n\n"
+            "Response:"
+        )
+        try:
+            chain = prompt | llm | StrOutputParser()
+            res = await chain.ainvoke({"query": query, "data": data_text[:8000]})
+            return res.strip()
+        except Exception as e:
+            logger.error(f"LLM summary generation failed: {e}")
+            return "Here is the raw data:\n\n" + data_text[:2000]
+
     async def _handle_multi_agent_flow(
         self, query: str, correlation_id: str, intent: ParsedIntent
     ) -> Dict[str, Any]:
@@ -593,11 +618,27 @@ class ClientAgent:
             )
             
             agent_names = ", ".join(intent.agents_to_call)
+            
+            # Extract basic data to summarize
+            raw_data = ""
+            for agent, res in conversation.data.items():
+                if agent == "fetch_jobs":
+                    jobs = self._extract_jobs({"result": res})
+                    raw_data += f"Fetched Jobs:\n{self._rewrite_fetch_details(jobs, max_items=10, source='scrape')['summary']}\n\n"
+                elif agent == "naukri_applier":
+                    raw_data += f"Apply Summary:\n{self._format_apply_summary({'result': res})}\n\n"
+            
+            if not raw_data:
+                raw_data = f"Agents {agent_names} completed successfully."
+
+            logger.info("  🤖 Generating conversational summary from multi-agent output...")
+            response_text = await self._generate_conversational_summary(query, raw_data)
+
             return {
                 "status": conversation.status,
                 "query": query,
                 "selected_flow": "multi_agent_pipeline",
-                "response": f"🔄 Executed multi-agent pipeline: {agent_names}",
+                "response": response_text,
                 "correlation_id": correlation_id,
                 "intent_confidence": intent.confidence,
                 "reasoning": intent.reasoning,

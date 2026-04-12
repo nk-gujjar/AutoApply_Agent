@@ -20,7 +20,7 @@ def parse_naukri_jobs_file(file_path: Path = None) -> List[Dict[str, Any]]:
         List of job dictionaries with standardized fields
     """
     if file_path is None:
-        file_path = config.DATA_DIR / "naukri_jobs.txt"
+        file_path = config.JOBS_DIR / "naukri_jobs.txt"
     
     if not file_path.exists():
         logger.warning(f"Jobs file not found: {file_path}")

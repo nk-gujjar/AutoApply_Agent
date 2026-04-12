@@ -14,7 +14,7 @@ class NaukriApplierAgent(BaseAgent):
 
     async def execute(self, payload: Dict[str, Any]) -> AgentResult:
         jobs: List[Dict[str, Any]] = payload.get("jobs") or []
-        file_path = payload.get("file_path", str(config.DATA_DIR / "naukri_jobs.txt"))
+        file_path = payload.get("file_path", str(config.JOBS_DIR / "naukri_jobs.txt"))
 
         if not jobs:
             # Rehydrate from cache if jobs were stored by fetch_jobs

@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "apply 5 jobs at naukri.com for the AI Engineer"
+    },
+    {
+      "type": "ai",
+      "content": "**Job Application Update**\n\nI've started applying to 5 jobs on Naukri.com for the position of AI Engineer. However, it seems that the process is still in progress, and no jobs have been applied to yet.\n\n**Current Status:**\n\n* Applied: 0\n* Already Applied: 0\n* Skipped (External): 0\n* Skipped (Blocked): 0\n* Failed: 0\n* Total Processed: 0\n\nPlease note that this is a preliminary update, and I'll keep you informed about the progress of the job applications. Once the process is complete, I'll provide you with a detailed summary of the applications, including the jobs that were applied to and the outcome of each application.\n\nIf you have any questions or need further assistance, feel free to ask!"
+    }
+  ],
+  "context": {
+    "last_jd_link": "",
+    "last_jd": {},
+    "last_jd_source": ""
+  }
+}

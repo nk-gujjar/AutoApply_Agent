@@ -55,6 +55,22 @@ class PersonalProfile(BaseModel):
     cert_2: Optional[str] = Field(None, description="Certification 2")
     cert_3: Optional[str] = Field(None, description="Certification 3")
     
+    # Experience
+    experience_1_company: Optional[str] = Field(None, description="Experience 1 company")
+    experience_1_role: Optional[str] = Field(None, description="Experience 1 role")
+    experience_1_duration: Optional[str] = Field(None, description="Experience 1 duration")
+    experience_1_description: Optional[str] = Field(None, description="Experience 1 description")
+
+    experience_2_company: Optional[str] = Field(None, description="Experience 2 company")
+    experience_2_role: Optional[str] = Field(None, description="Experience 2 role")
+    experience_2_duration: Optional[str] = Field(None, description="Experience 2 duration")
+    experience_2_description: Optional[str] = Field(None, description="Experience 2 description")
+
+    experience_3_company: Optional[str] = Field(None, description="Experience 3 company")
+    experience_3_role: Optional[str] = Field(None, description="Experience 3 role")
+    experience_3_duration: Optional[str] = Field(None, description="Experience 3 duration")
+    experience_3_description: Optional[str] = Field(None, description="Experience 3 description")
+
     # Projects
     project_1_name: Optional[str] = Field(None, description="Project 1 name")
     project_1_description: Optional[str] = Field(None, description="Project 1 description")
@@ -167,6 +183,11 @@ class PersonalProfile(BaseModel):
                 ],
                 'CERTIFICATIONS': [
                     'cert_1', 'cert_2', 'cert_3'
+                ],
+                'EXPERIENCE': [
+                    'experience_1_company', 'experience_1_role', 'experience_1_duration', 'experience_1_description',
+                    'experience_2_company', 'experience_2_role', 'experience_2_duration', 'experience_2_description',
+                    'experience_3_company', 'experience_3_role', 'experience_3_duration', 'experience_3_description',
                 ],
                 'PROJECTS': [
                     'project_1_name', 'project_1_description', 'project_1_tech_stack', 'project_1_github','project_1_duration',

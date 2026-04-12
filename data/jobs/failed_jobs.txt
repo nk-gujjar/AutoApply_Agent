@@ -14,3 +14,15 @@
 [FAILED] AI Engineer | PURETECH CODEX | https://www.naukri.com/job-listings-ai-engineer-puretech-codex-pune-1-to-2-years-270326018266 | reason: nothing_handled_after_click
 [FAILED] AI Engineer | Freshprints | https://job-boards.greenhouse.io/freshprints?error=true | reason: no_apply_button
 [FAILED] AI Engineer | Onit | https://jobs.lever.co/onit/561f639d-692b-4f78-9bcd-85b6da768a24 | reason: no_apply_button
+[FAILED] Gen AI - Engineer | Iris Software | https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-technologies-private-limited-noida-2-to-6-years-230326917842 | reason: no_apply_button
+[FAILED] Gen AI - Engineer | Iris Software | https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-technologies-private-limited-noida-2-to-6-years-230326917841 | reason: no_apply_button
+[FAILED] Gen AI-Engineer | Iris Software | https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-noida-pune-chennai-5-to-9-years-110326012820 | reason: no_apply_button
+[FAILED] Hiring For AI Engineer | HL Mando Softtech | https://www.naukri.com/job-listings-hiring-for-ai-engineer-hl-mando-softtech-gurugram-6-to-7-years-230326006819 | reason: stuck_on_question
+[FAILED] AI Engineer | Porteck | https://www.naukri.com/job-listings-ai-engineer-ivistec-partners-india-private-limited-noida-new-delhi-delhi-ncr-5-to-8-years-240326030855 | reason: no_apply_button
+[FAILED] AI Intern Engineer | Guidepoint | https://www.naukri.com/job-listings-ai-intern-engineer-guidepoint-pune-0-to-1-years-020426032860 | reason: no_apply_button
+[FAILED] SSR-200-AI Engineer | S S Rana & Co | https://www.naukri.com/job-listings-ssr-200-ai-engineer-s-s-rana-co-new-delhi-0-to-2-years-090326026605 | reason: no_apply_button
+[FAILED] Junior AI Engineer | Ekagra Practices | https://www.naukri.com/job-listings-junior-ai-engineer-ekagra-practices-gurugram-0-to-1-years-260326012926 | reason: stuck_on_question
+[FAILED] Artificial Intelligence Engineer| WFO| Fresher| Agentic AI | LLM | Intellinet Systems | https://www.naukri.com/job-listings-artificial-intelligence-engineer-wfo-fresher-agentic-ai-llm-intellinet-systems-gurugram-0-to-1-years-070426026920 | reason: stuck_on_question
+[FAILED] AI Engineer - RAG ( Intern /Fresher / Experienced) | Taxmann Publications | https://www.naukri.com/job-listings-ai-engineer-rag-intern-fresher-experienced-taxmann-new-delhi-1-to-2-years-310326912111 | reason: no_apply_button
+[FAILED] AI Engineer | PURETECH CODEX | https://www.naukri.com/job-listings-ai-engineer-puretech-codex-pune-1-to-2-years-270326018266 | reason: no_apply_button
+[FAILED] Generative AI Engineer | Easemytrip | https://www.naukri.com/job-listings-generative-ai-engineer-easemytrip-com-gurugram-1-to-4-years-120525010837 | reason: no_apply_button

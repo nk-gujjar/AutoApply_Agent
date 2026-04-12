@@ -1,0 +1,1300 @@
+
+=================================================================
+Title              : Gen AI Engineer
+Company            : Dentsu Webchutney
+Location           : Pune
+Experience         : 1-3 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://dentsuaegis.wd3.myworkdayjobs.com/en-US/DAN_GLOBAL/job/Pune/Developer-Engineer_R1104744
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:26.829505
+Naukri Link        : https://www.naukri.com/job-listings-gen-ai-engineer-dentsu-inc-pune-1-to-3-years-190326502891
+
+--- Job Details (LLM-extracted) ---
+Role: Software Engineer
+Experience Required: 
+Key Skills: 
+Tech Stack: 
+CTC: 
+Main Responsibilities: 
+
+- Works independently with a broader overview on the project
+- Participates in communications with partners and clients, when needed
+- Understands and follows the release processes in the company
+- Participates in requirements analysis, development, unit testing and documentation
+- Writes quality code to fit unique customer needs and configurations
+- Troubleshoots and debugs (with some guidance from senior team members if needed)
+- Provides mentoring to junior Software Engineers
+- Delivers trainings and participates in knowledge sharing
+- Achieves better understanding of the company platform and processes and suggests improvements
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Marsh Risk
+Location           : Gurugram
+Experience         : 3-6 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://careers.marsh.com/global/en/job/R_332280
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:32.237410
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-marsh-risk-gurugram-3-to-6-years-250326500009
+
+--- Job Details (LLM-extracted) ---
+Role: Senior AI(NLP) Engineer
+Experience Required: 3-6 years
+Key Skills: 
+- Proficiency in Python
+- Knowledge of C++, Java, and JS
+- Solid understanding of neural networks
+- Proficient in deep learning models using TensorFlow, PyTorch, and Keras
+- Understanding of NLP related techniques
+- Experience in evaluating NLP models
+- Familiarity with GPU and related technologies
+- Familiarity with Python libraries such as Spacy, NLTK, NumPy, Pandas, and scikit-learn
+Tech Stack: 
+- Python
+- TensorFlow
+- PyTorch
+- Keras
+- Spacy
+- NLTK
+- NumPy
+- Pandas
+- scikit-learn
+CTC: 
+Main Responsibilities: 
+- Review and analyze existing NLP models
+- Modify and finetune existing state of the art pre-trained generic NLP models
+- Create new/modify model architectures and train them from scratch
+- Test and refine models and systems based on real-world data and feedback
+- Evaluate project requirements, plan and manage the roadmap of a project
+- Present findings and insights in a clear and concise manner to stakeholders
+- Collaborate and help to integrate and deploy AI systems into broader product architecture
+- Conduct research to stay updated on emerging NLP and AI technologies and trends
+- Automate data preprocessing and annotation processes to streamline workflow efficiency
+- Maintain comprehensive documentation for algorithms, implementations, and evaluations
+- Mentor junior engineers and provide strategic guidance on project development
+=================================================================
+
+=================================================================
+Title              : Gen AI - Engineer
+Company            : Iris Software
+Location           : Noida
+Experience         : 2-6 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:34.597360
+Naukri Link        : https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-technologies-private-limited-noida-2-to-6-years-230326917842
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Software Engineer - Generative AI
+
+Experience Required: 
+3+ years of experience in software development
+
+Key Skills: 
+- Python (Flask, REST, async programming)
+- Generative AI and LLM-based applications
+- RAG system, embeddings, vector databases
+- Agentic frameworks (LangChain 1.0, LangGraph, ReAct, OpenAI Assistants, or custom agents)
+- AWS Cloud (ECS, S3, API Gateway, IAM, Bedrock)
+- API development, microservices, containerization
+- CI/CD pipelines, Docker, GitLab/GitHub Actions
+
+Tech Stack: 
+- Python
+- Flask
+- AWS Cloud
+- LangChain 1.0
+- LangGraph
+- OpenAI tools
+- Custom agents
+- RAG pipelines
+- Embeddings
+- Vector databases
+- Chunking strategies
+- Vector search systems (PGVector, FAISS, etc.)
+- MCP / tool-integration frameworks
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+- Generative AI Design & Development
+- Python & Cloud
+- Collaboration
+=================================================================
+
+=================================================================
+Title              : Gen AI - Engineer
+Company            : Iris Software
+Location           : Noida
+Experience         : 2-6 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:36.936611
+Naukri Link        : https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-technologies-private-limited-noida-2-to-6-years-230326917841
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Generative AI Engineer
+
+Experience Required: 
+Not specified
+
+Key Skills: 
+- Python (Flask, REST, async programming)
+- Generative AI and LLM-based applications
+- RAG system, embeddings, vector databases
+- Agentic frameworks (LangChain 1.0, LangGraph, ReAct, OpenAI Assistants, or custom agents)
+- AWS Cloud (ECS, S3, API Gateway, IAM, Bedrock)
+- API development, microservices, containerization
+- CI/CD pipelines, Docker, GitLab/GitHub Actions
+
+Tech Stack: 
+- Python
+- Flask
+- REST
+- async programming
+- LangChain 1.0
+- LangGraph
+- OpenAI tools
+- custom agents
+- RAG pipelines
+- embeddings
+- vector databases
+- PGVector
+- FAISS
+- MCP / tool-integration frameworks
+- AWS Cloud (ECS, S3, API Gateway, IAM, Bedrock)
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+- Generative AI Design & Development
+- Python & Cloud
+- Collaboration
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Acenet
+Location           : Bengaluru, Pune, Gurugram
+Experience         : 3-8 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://careers.acenet.io/network/open_positions/101451-ai-engineer/
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:40.444821
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-acenet-pune-gurugram-bengaluru-3-to-8-years-250326504514
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer
+Experience Required: 3+ years
+Key Skills: 
+- Python
+- TensorFlow
+- PyTorch
+- Scikit-learn
+- NLP
+- Computer vision
+- Deep learning
+- Data preprocessing
+- Feature engineering
+- Model evaluation
+- REST APIs
+- Model deployment
+- Cloud platforms (AWS, Azure, GCP)
+- SQL/NoSQL databases
+- Data processing tools
+Tech Stack: 
+- Python
+- TensorFlow
+- PyTorch
+- Scikit-learn
+- NLP
+- Computer vision
+- Deep learning
+- Data preprocessing
+- Feature engineering
+- Model evaluation
+- REST APIs
+- Model deployment
+- Cloud platforms (AWS, Azure, GCP)
+- SQL/NoSQL databases
+- Data processing tools
+CTC: Competitive compensation & benefits, ESOPs and international assignments
+Main Responsibilities: 
+- Design, develop, test, and deploy AI/ML models and solutions
+- Work with structured and unstructured data to build predictive, classification, and recommendation models
+- Implement and optimize machine learning algorithms, deep learning models, and NLP solutions
+- Collaborate with data engineers to build scalable data pipelines and ensure data quality
+- Integrate AI models into production systems and applications using APIs and microservices
+- Perform data analysis, feature engineering, and model evaluation
+- Ensure AI solutions follow best practices for security, scalability, and performance
+- Stay updated with the latest AI/ML trends, tools, and research
+=================================================================
+
+=================================================================
+Title              : AI Engineer (n8n)
+Company            : Acenet
+Location           : Bengaluru, Pune, Gurugram
+Experience         : 3-5 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://careers.acenet.io/network/open_positions/101453-ai-engineer-n8n/
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:43.552279
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-n8n-acenet-pune-gurugram-bengaluru-3-to-5-years-250326504508
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer (n8n)
+Experience Required: 3-5 years
+Key Skills: 
+- n8n automation platform
+- LLMs
+- Vector DBs
+- Postgres
+- Data integration
+- Workflow automation
+- REST APIs
+- Webhooks
+- Automation tools
+- Python
+- SQL
+- API based integrations
+Tech Stack: n8n, LLMs, Vector DBs, Postgres, Python, SQL
+CTC: Competitive compensation & benefits, ESOPs and international assignments
+Main Responsibilities: 
+- Designing, integrating, and automating business processes using AI agents, workflows and data pipelines
+- Collaboration with cross-functional teams
+- Communicating technical concepts clearly
+=================================================================
+
+=================================================================
+Title              : Conversational AI Engineer
+Company            : Sykes
+Location           : Bengaluru, Pune, Kolkata, Mumbai, New Delhi, Hyderabad, Chennai
+Experience         : 5-10 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://jobs.foundever.com/job/Conversational-AI-Engineer/1340504100/
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:52.256796
+Naukri Link        : https://www.naukri.com/job-listings-conversational-ai-engineer-sykes-business-services-of-india-pvt-ltd-kolkata-mumbai-new-delhi-hyderabad-pune-chennai-bengaluru-5-to-10-years-240326507957
+
+--- Job Details (LLM-extracted) ---
+Role: CAI Engineer (Conversational AI Engineer)
+Experience Required: 5+ years
+Key Skills: 
+- Conversational AI solutions (chatbots and voicebots)
+- LLMs, Agentic AI, and NLU models
+- Prompt engineering
+- Knowledge base structuring
+- System integration
+- STT/TTS configuration and maintenance
+- Fine-tuning
+- Proactive monitoring
+- Performance optimization
+- Data preprocessing
+- Feature engineering
+Tech Stack: 
+- LLMs
+- Agentic AI
+- NLU models
+- Machine learning and deep learning frameworks
+CTC: Not specified
+Main Responsibilities: 
+- Implement system integrations for seamless automation across platforms
+- Engineer prompts and structure knowledge bases to ensure accurate and context-aware responses
+- Ensure safe and reliable AI model by implementing safeguards and governance measures
+- Configure and maintain STT/TTS systems, ensuring high-quality voice performance and seamless telephony integration
+- Document architectures, configurations, and deployment processes to maintain transparency and reproducibility
+- Collaborate with cross-functional teams to align AI solutions with organizational goals
+- Apply Agentic AI knowledge to design frameworks and provide implementation-focused recommendations
+- Create best practices for hybrid bots with NLU and LLM
+=================================================================
+
+=================================================================
+Title              : Gen AI-Engineer
+Company            : Iris Software
+Location           : Pune, Noida, Chennai
+Experience         : 5-9 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:13:57.778484
+Naukri Link        : https://www.naukri.com/job-listings-gen-ai-engineer-iris-software-noida-pune-chennai-5-to-9-years-110326012820
+
+--- Job Details (LLM-extracted) ---
+Role: Generative AI Design & Development Engineer
+Experience Required: Not specified
+Key Skills: 
+- Python (Flask, REST, async programming)
+- Generative AI and LLM-based applications
+- RAG system, embeddings, vector databases
+- Agentic frameworks (LangChain 1.0, LangGraph, ReAct, OpenAI Assistants, or custom agents)
+- AWS Cloud (ECS, S3, API Gateway, IAM, Bedrock)
+- API development, microservices, containerization
+- CI/CD pipelines, Docker, GitLab/GitHub Actions
+Tech Stack: Python, Flask, REST, async programming, AWS Cloud, LangChain 1.0, LangGraph, OpenAI tools, custom agents, RAG pipelines, embeddings, vector databases, PGVector, FAISS, MCP / tool-integration frameworks
+CTC: Not specified
+Main Responsibilities: 
+- Design and implementation of GenAI-powered applications
+- Translation of functional requirements into efficient Python services
+- Building and enhancing RAG pipelines
+- Implementation of basic Agentic workflows
+- Work with vector search systems
+- Indexing, metadata tagging, and retrieval optimizations
+- Code reviews, design discussions, and documentation
+- Following best practices in coding standards, testing and DevOps
+=================================================================
+
+=================================================================
+Title              : Hiring For AI Engineer
+Company            : HL Mando Softtech
+Location           : Gurugram
+Experience         : 6-7 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:14:07.518539
+Naukri Link        : https://www.naukri.com/job-listings-hiring-for-ai-engineer-hl-mando-softtech-gurugram-6-to-7-years-230326006819
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Solutions Lead
+Experience Required: 6-7 years
+Key Skills: 
+- Strong programming skills in Python
+- Experience in AI/ML development
+- Machine Learning and Deep Learning frameworks (TensorFlow, PyTorch)
+- Computer Vision frameworks/libraries (OpenCV, Detectron2, YOLO)
+- Scalable AI solutions and production-ready pipelines
+- Model optimization, debugging, and performance improvement
+- Team leadership and mentoring capabilities
+- Excellent analytical, problem-solving, and communication skills
+Tech Stack: Python, TensorFlow, PyTorch, OpenCV, Detectron2, YOLO
+CTC: Not specified
+Main Responsibilities: 
+- Design, development, and deployment of AI/ML solutions
+- Team management and mentoring
+- Scalable AI architectures and model pipelines
+- Collaboration with MLOps team
+- Research and evaluation of new AI models and tools
+- Adherence to best practices in coding and documentation
+- Technical documentation and project reports
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Porteck
+Location           : Hybrid - Noida, Delhi / NCR, New Delhi
+Experience         : 5-8 Yrs
+CTC / Salary       : 16-20 Lacs P.A.
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-03-26T00:14:14.896525
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-ivistec-partners-india-private-limited-noida-new-delhi-delhi-ncr-5-to-8-years-240326030855
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer (LLMs, Agentic AI, Healthcare Automation)
+Experience Required: 5-8 Years
+Key Skills: 
+- Python programming
+- LLMs, prompt engineering, AI workflows
+- AI tools: Claude, Codex, GitHub Copilot
+- Agentic AI, orchestration frameworks
+- APIs, system integrations
+- Healthcare workflows: RCM, billing, coding (ICD-10, CPT)
+- EHR/EMR systems (Epic, Cerner or similar)
+- HL7/FHIR standards
+- HIPAA, healthcare data privacy standards
+Tech Stack: Python, LLMs, Claude, Codex, GitHub Copilot, APIs, EHR/EMR systems, HL7/FHIR standards
+CTC: Not specified
+Main Responsibilities: 
+- Identify automation opportunities across healthcare operations
+- Design and deploy AI solutions using LLMs and agentic AI frameworks
+- Build copilots for clinical documentation, coding, billing, and operational workflows
+- Evaluate and implement AI tools
+- Develop Python-based AI and automation solutions
+- Implement RAG pipelines using healthcare data
+- Build multi-agent workflows for end-to-end process automation
+- Integrate with healthcare systems
+- Ensure HIPAA compliance, security, and responsible AI usage
+=================================================================
+
+=================================================================
+Title              : Agentic AI Engineer
+Company            : Flytbase Labs
+Location           : Pune
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:23.793182
+Naukri Link        : https://www.naukri.com/job-listings-agentic-ai-engineer-flytbase-labs-pune-0-to-1-years-080426500969
+
+--- Job Details (LLM-extracted) ---
+Role: Agentic AI Engineer
+Experience Required: 
+Key Skills: 
+- Multi-agent AI frameworks
+- Retrieval-Augmented Generation (RAG) pipelines
+- Vision-Language Model (VLM) solutions
+- Python, PyTorch/TensorFlow, Hugging Face
+- Cloud environments (AWS/GCP)
+- Vector databases (Pinecone, Milvus)
+- Agentic frameworks (LangChain, CrewAI, LangGraph, AutoGen)
+Tech Stack: Python, PyTorch/TensorFlow, Hugging Face, AWS/GCP, Pinecone, Milvus, LangChain, CrewAI, LangGraph, AutoGen
+CTC: 
+Main Responsibilities: 
+- Architecting multi-agent frameworks
+- Implementing RAG pipelines and persistent memory
+- Developing VLM solutions
+- Enabling agents to execute Python functions and API calls
+- Deploying AI workflows on AWS/GCP
+- Implementing observability and debugging tools
+- Designing human-in-the-loop safety mechanisms
+=================================================================
+
+=================================================================
+Title              : AI Intern Engineer
+Company            : Guidepoint
+Location           : Hybrid - Pune
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:26.369142
+Naukri Link        : https://www.naukri.com/job-listings-ai-intern-engineer-guidepoint-pune-0-to-1-years-020426032860
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineering Intern
+Experience Required: Pursuing or recently completed BS/MS in AI, Computer Science, Mathematics, or related quantitative field
+Key Skills: AI/ML fundamentals, neural networks, deep learning, fine-tuning, RAG, chain-of-thought, NLP, ML frameworks, LLM APIs, Python data work, prompt engineering principles
+Tech Stack: PyTorch, TensorFlow, Keras, OpenAI API, Anthropic Claude, Pandas, NumPy, scikit-learn, Pinecone, Qdrant, Weaviate, ChromaDB, LangChain, LlamaIndex, CrewAI
+CTC: Not specified
+Main Responsibilities: Develop machine learning models, build and optimize RAG pipelines, implement intelligent document processing systems, develop prompt engineering strategies, build AI-powered data extraction systems, implement semantic search and intelligent querying capabilities, develop agent-based architectures, participate in code reviews, testing, and documentation, prototype new approaches, contribute to internal knowledge sharing and technical discussions, experiment with emerging tools and frameworks.
+=================================================================
+
+=================================================================
+Title              : SSR-200-AI Engineer
+Company            : S S Rana & Co
+Location           : New Delhi(Adhchini)
+Experience         : 0-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:28.580496
+Naukri Link        : https://www.naukri.com/job-listings-ssr-200-ai-engineer-s-s-rana-co-new-delhi-0-to-2-years-090326026605
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Generative AI/ LLMs Developer
+
+Experience Required: 
+Not specified
+
+Key Skills: 
+- Generative AI
+- LLMs
+- AI tooling
+- API development
+- Python
+- SQL databases
+- AI Model
+
+Tech Stack: 
+- Fast API
+- GitHub Copilot
+- Cursor AI
+- ChatGPT
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+- Building APIs
+- Accelerating development with AI tools
+=================================================================
+
+=================================================================
+Title              : Junior AI Engineer
+Company            : Ekagra Practices
+Location           : Gurugram
+Experience         : 0-1 Yrs
+CTC / Salary       : 2-3.5 Lacs P.A.
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:30.578876
+Naukri Link        : https://www.naukri.com/job-listings-junior-ai-engineer-ekagra-practices-gurugram-0-to-1-years-260326012926
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Engineer
+Experience Required: 
+Key Skills: 
+Tech Stack: Azure AI, MS Power Automate, Microsoft Co-Pilot Studio
+CTC: 
+Main Responsibilities: Design, development, and deployment of AI models and solutions
+=================================================================
+
+=================================================================
+Title              : Artificial Intelligence Engineer| WFO| Fresher| Agentic AI | LLM
+Company            : Intellinet Systems
+Location           : Gurugram(Sector 48)
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:32.806388
+Naukri Link        : https://www.naukri.com/job-listings-artificial-intelligence-engineer-wfo-fresher-agentic-ai-llm-intellinet-systems-gurugram-0-to-1-years-070426026920
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Data Scientist
+
+Experience Required: 
+0-1 Year
+
+Key Skills: 
+- Machine learning models
+- Data science
+- LLMs
+- RAG
+- LangChain
+
+Tech Stack: 
+Not specified
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+Not specified
+=================================================================
+
+=================================================================
+Title              : AI Engineer - RAG ( Intern /Fresher / Experienced)
+Company            : Taxmann Publications
+Location           : New Delhi
+Experience         : 1-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:35.271573
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-rag-intern-fresher-experienced-taxmann-new-delhi-1-to-2-years-310326912111
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer
+Experience Required: Intern/Fresher/Experienced
+Key Skills: 
+- RAG (Retrieval-Augmented Generation) approaches
+- Python
+- Transformers
+- Vector databases
+- APIs
+- LangChain
+- LLMs (OpenAI, LLaMA, Mistral)
+- SQL
+- Power BI
+- RESTful API development (Flask or FastAPI)
+- Git
+- Cloud platforms (AWS)
+Key Technologies: 
+- LangChain
+- Haystack
+- Weaviate
+- Pinecone
+- Chroma
+- FAISS
+CTC: Not specified
+Main Responsibilities: 
+- Design and build AI applications using RAG-based architectures
+- Fine-tune and integrate LLMs with external data sources
+- Build and optimize pipelines for document ingestion, chunking, vector embedding, and retrieval
+- Implement and experiment with tools like LangChain, Haystack, Weaviate, Pinecone, Chroma, FAISS
+- Develop and maintain RESTful APIs and web applications using Python frameworks
+- Collaborate with frontend/backend teams to integrate AI into live products
+- Conduct evaluations, benchmark performance, and recommend improvements
+- Work with team leads to convert PoCs into scalable solutions
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : PURETECH CODEX
+Location           : Pune
+Experience         : 1-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:37.777084
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-puretech-codex-pune-1-to-2-years-270326018266
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer
+Experience Required: 1-2 Years
+Key Skills: 
+- Strong understanding of supervised, unsupervised, and reinforcement learning concepts
+- Hands-on experience with deep learning frameworks: PyTorch and/or TensorFlow
+- Proficiency in Python with libraries like NumPy, Pandas, Scikit-learn, and Matplotlib
+- Experience building and fine-tuning models for NLP, Computer Vision, or Recommendation Systems
+- Generative AI & LLMs
+- MLOps & Engineering
+- Data & Backend
+Tech Stack: 
+- PyTorch
+- TensorFlow
+- Python
+- NumPy
+- Pandas
+- Scikit-learn
+- Matplotlib
+- LLMs (GPT, Claude, Gemini, LLaMA, Mistral, etc.)
+- LangChain
+- LangGraph
+- LlamaIndex
+- Pinecone
+- Weaviate
+- Chroma
+- FAISS
+- MLflow
+- Weights & Biases
+- FastAPI
+- Docker
+- Kubernetes
+- Azure
+- AWS
+- GCP
+CTC: 
+Main Responsibilities: 
+- Design, develop, and deploy machine learning and deep learning models into production environments
+- Build and maintain end-to-end ML pipelines
+- Work with LLMs and GenAI frameworks to build intelligent applications, chatbots, and automation tools
+- Collaborate with data scientists, backend engineers, and product teams to translate business requirements into AI-driven solutions
+- Optimize models for performance, scalability, and cost-efficiency in cloud environments
+- Conduct research and stay up-to-date with the latest AI/ML trends, papers, and tools
+- Implement MLOps best practices including CI/CD for ML, model versioning, and experiment tracking
+- Ensure data quality, model fairness, and responsible AI practices
+=================================================================
+
+=================================================================
+Title              : Generative AI Engineer
+Company            : Easemytrip
+Location           : Gurugram
+Experience         : 1-4 Yrs
+CTC / Salary       : 8-18 Lacs P.A.
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:40.856032
+Naukri Link        : https://www.naukri.com/job-listings-generative-ai-engineer-easemytrip-com-gurugram-1-to-4-years-120525010837
+
+--- Job Details (LLM-extracted) ---
+Role: Generative AI Engineer
+Experience Required: 2 years
+Key Skills: 
+- Python
+- Asynchronous programming
+- FastAPI or Django
+- LLM Ecosystem (LangChain, LlamaIndex, Hugging Face Transformers, OpenAI/Anthropic APIs)
+- Database Knowledge (relational and NoSQL databases)
+- Model Engineering (prompt design, LLM fine-tuning, evaluation metrics)
+- Cloud Deployment (AWS/GCP/Azure)
+- NLP Understanding (named entity recognition, sentiment analysis, dialogue state tracking)
+Tech Stack: 
+- FastAPI or Django
+- PostgreSQL or MongoDB
+- AWS, GCP, or Azure
+- LangChain, LlamaIndex, Hugging Face Transformers, OpenAI/Anthropic APIs
+CTC: Not specified
+Main Responsibilities: 
+- LLM Integration
+- Prompt Engineering & RAG
+- Conversational Flow Design
+- LLM Performance Optimization
+- Backend Development
+- Database & ORM Design
+- Cloud & Serverless Infrastructure
+- Model Fine-Tuning & Evaluation
+- NLP Pipeline Implementation
+- Cross-Functional Collaboration
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Freshprints
+Location           : Remote
+Experience         : 1-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://job-boards.greenhouse.io/freshprints?error=true
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:44.473967
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-freshprints-remote-1-to-2-years-090426504792
+
+--- Job Details (LLM-extracted) ---
+Role: AI Prompt Specialist
+Experience Required: 1-2 years of experience in Quality Assurance role within a contact center or a related field
+Key Skills: 
+- Proficiency in working with large language models (LLMs) like ChatGPT
+- Excellent written communication skills
+- Ability to create detailed, clear, and structured content
+Tech Stack: 
+- ChatGPT
+- Large Language Models (LLMs)
+CTC: Not specified
+Main Responsibilities: 
+- Develop, refine, and test prompts to ensure optimal output from AI systems
+- Collaborate with cross-functional teams to align AI outputs with business goals
+- Conduct quality assurance on AI outputs
+- Provide regular feedback to improve the AI's understanding of different input scenarios
+- Document and share prompt-writing best practices across teams
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Onit
+Location           : Pune
+Experience         : 1-4 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://jobs.lever.co/onit/561f639d-692b-4f78-9bcd-85b6da768a24
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T01:24:49.945148
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-onit-pune-1-to-4-years-300326501897
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer
+Experience Required: 
+Key Skills: 
+- LLM APIs (OpenAI / Azure OpenAI, Anthropic, Gemini on Vertex AI)
+- Tool-using agents (structured function calling, schema validation, retries, fallbacks)
+- Multi-agent workflows
+- Context engineering (dynamic context assembly, context budgeting, grounding strategies)
+- Retrieval-augmented generation (RAG) and search workflows
+- Evaluation frameworks (accuracy, reliability, output quality)
+- Automated evaluation pipelines and release gates
+- Online metrics (task success rate, human override rate, safety flags, latency, cost)
+- LLM-as-judge responsibly (calibration, validation, human labels)
+- Scalable backend services and APIs
+- Integration with cloud, microservices, and event-driven architectures
+- Observability and analytics (tracing, evaluations, prompt versioning, cost tracking)
+- Reliability, uptime, performance, and security of AI services
+- Internal tooling for evaluation, testing, prompt/version management, and safe deployment
+Tech Stack: 
+- LLM APIs (OpenAI / Azure OpenAI, Anthropic, Gemini on Vertex AI)
+- Langfuse (and/or OpenTelemetry-compatible stacks)
+- Vertex AI
+CTC: 
+Main Responsibilities: 
+- Design and ship production-grade agentic AI systems
+- Build and integrate AI-driven features
+- Design and implement tool-using agents
+- Build multi-agent workflows
+- Create agentic workflows
+- Own context engineering end-to-end
+- Implement retrieval-augmented generation (RAG) and search workflows
+- Establish evaluation frameworks
+- Build task-specific eval suites
+- Set up automated evaluation pipelines and release gates
+- Define and monitor online metrics
+- Use LLM-as-judge responsibly
+- Develop scalable backend services and APIs
+- Integrate AI pipelines into existing cloud, microservices, and event-driven architectures
+- Implement observability and analytics
+- Ensure reliability, uptime, performance, and security of AI services
+- Build internal tooling for evaluation, testing, prompt/version management, and safe deployment
+- Partner with product managers, designers, the Chief Architect, and domain SMEs to shape AI-first solutions
+- Rapidly prototype concepts and iterate based on user feedback and measurable eval results
+- Translate business problems into well-structured AI workflows
+=================================================================
+
+=================================================================
+Title              : AI Intern Engineer
+Company            : Guidepoint
+Location           : Hybrid - Pune
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T02:18:11.736663
+Naukri Link        : https://www.naukri.com/job-listings-ai-intern-engineer-guidepoint-pune-0-to-1-years-020426032860
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineering Intern
+Experience Required: Pursuing or recently completed BS/MS in AI, Computer Science, Mathematics, or related quantitative field
+Key Skills: AI/ML fundamentals, neural networks, deep learning, fine-tuning, RAG, chain-of-thought, NLP, ML frameworks, LLM APIs, Python data work, prompt engineering principles
+Tech Stack: PyTorch, TensorFlow, Keras, OpenAI API, Anthropic Claude, Pandas, NumPy, scikit-learn, Pinecone, Qdrant, Weaviate, ChromaDB, LangChain, LlamaIndex, CrewAI
+CTC: Not specified
+Main Responsibilities: Develop machine learning models, build and optimize RAG pipelines, implement intelligent document processing systems, develop prompt engineering strategies, build AI-powered data extraction systems, implement semantic search and intelligent querying capabilities, develop agent-based architectures, participate in code reviews, testing, and documentation, prototype new approaches, contribute to internal knowledge sharing and technical discussions, experiment with emerging tools and frameworks.
+=================================================================
+
+=================================================================
+Title              : SSR-200-AI Engineer
+Company            : S S Rana & Co
+Location           : New Delhi(Adhchini)
+Experience         : 0-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T02:18:14.107158
+Naukri Link        : https://www.naukri.com/job-listings-ssr-200-ai-engineer-s-s-rana-co-new-delhi-0-to-2-years-090326026605
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Generative AI/ LLMs Developer
+
+Experience Required: 
+Not specified
+
+Key Skills: 
+- Generative AI
+- LLMs
+- AI tooling
+- API development
+- Python
+- SQL databases
+- AI Model
+
+Tech Stack: 
+- Fast API
+- GitHub Copilot
+- Cursor AI
+- ChatGPT
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+- Building APIs
+- Accelerating development with AI tools
+=================================================================
+
+=================================================================
+Title              : Junior AI Engineer
+Company            : Ekagra Practices
+Location           : Gurugram
+Experience         : 0-1 Yrs
+CTC / Salary       : 2-3.5 Lacs P.A.
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T02:18:16.232040
+Naukri Link        : https://www.naukri.com/job-listings-junior-ai-engineer-ekagra-practices-gurugram-0-to-1-years-260326012926
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Engineer
+Experience Required: 
+Key Skills: 
+Tech Stack: Azure AI, MS Power Automate, Microsoft Co-Pilot Studio
+CTC: 
+Main Responsibilities: Design, development, and deployment of AI models and solutions
+=================================================================
+
+=================================================================
+Title              : Artificial Intelligence Engineer| WFO| Fresher| Agentic AI | LLM
+Company            : Intellinet Systems
+Location           : Gurugram(Sector 48)
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T02:18:18.588175
+Naukri Link        : https://www.naukri.com/job-listings-artificial-intelligence-engineer-wfo-fresher-agentic-ai-llm-intellinet-systems-gurugram-0-to-1-years-070426026920
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Data Scientist
+
+Experience Required: 
+0-1 Year
+
+Key Skills: 
+- Machine learning models
+- Data science
+- LLMs
+- RAG
+- LangChain
+
+Tech Stack: 
+Not specified
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+Not specified
+=================================================================
+
+=================================================================
+Title              : AI Engineer - RAG ( Intern /Fresher / Experienced)
+Company            : Taxmann Publications
+Location           : New Delhi
+Experience         : 1-2 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-10T02:18:21.432150
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-rag-intern-fresher-experienced-taxmann-new-delhi-1-to-2-years-310326912111
+
+--- Job Details (LLM-extracted) ---
+Role: AI Engineer
+Experience Required: Intern/Fresher/Experienced
+Key Skills: 
+- RAG (Retrieval-Augmented Generation) approaches
+- Python
+- Transformers
+- Vector databases
+- APIs
+- LangChain
+- LLMs (OpenAI, LLaMA, Mistral)
+- SQL
+- Power BI
+- RESTful API development (Flask or FastAPI)
+- Git
+- Cloud platforms (AWS)
+Key Technologies: 
+- LangChain
+- Haystack
+- Weaviate
+- Pinecone
+- Chroma
+- FAISS
+CTC: Not specified
+Main Responsibilities: 
+- Design and build AI applications using RAG-based architectures
+- Fine-tune and integrate LLMs with external data sources
+- Build and optimize pipelines for document ingestion, chunking, vector embedding, and retrieval
+- Implement and experiment with tools like LangChain, Haystack, Weaviate, Pinecone, Chroma, FAISS
+- Develop and maintain RESTful APIs and web applications using Python frameworks
+- Collaborate with frontend/backend teams to integrate AI into live products
+- Conduct evaluations, benchmark performance, and recommend improvements
+- Work with team leads to convert PoCs into scalable solutions
+=================================================================
+
+=================================================================
+Title              : Junior AI Engineer
+Company            : Ekagra Practices
+Location           : Gurugram
+Experience         : 0-1 Yrs
+CTC / Salary       : 2-3.5 Lacs P.A.
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-12T13:56:04.061785
+Naukri Link        : https://www.naukri.com/job-listings-junior-ai-engineer-ekagra-practices-gurugram-0-to-1-years-260326012926
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Engineer
+Experience Required: 
+Key Skills: 
+Tech Stack: Azure AI, MS Power Automate, Microsoft Co-Pilot Studio
+CTC: 
+Main Responsibilities: Design, development, and deployment of AI models and solutions
+=================================================================
+
+=================================================================
+Title              : Artificial Intelligence Engineer| WFO| Fresher| Agentic AI | LLM
+Company            : Intellinet Systems
+Location           : Gurugram(Sector 48)
+Experience         : 0-1 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : easy_apply
+Apply Status       : apply
+External Apply Link: N/A
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-12T13:56:06.351454
+Naukri Link        : https://www.naukri.com/job-listings-artificial-intelligence-engineer-wfo-fresher-agentic-ai-llm-intellinet-systems-gurugram-0-to-1-years-070426026920
+
+--- Job Details (LLM-extracted) ---
+Role: 
+Data Scientist
+
+Experience Required: 
+0-1 Year
+
+Key Skills: 
+- Machine learning models
+- Data science
+- LLMs
+- RAG
+- LangChain
+
+Tech Stack: 
+Not specified
+
+CTC: 
+Not specified
+
+Main Responsibilities: 
+Not specified
+=================================================================
+
+=================================================================
+Title              : Associate AI Engineer India
+Company            : Cornerstone
+Location           : Pune
+Experience         : 1-3 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://cornerstone.csod.com/ux/ats/careersite/2/home/requisition/11140?c=cornerstone&sq=req11140
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-12T13:56:11.591136
+Naukri Link        : https://www.naukri.com/job-listings-associate-ai-engineer-india-cornerstone-on-demand-pune-1-to-3-years-090426501685
+
+--- Job Details (LLM-extracted) ---
+Role: Associate AI Engineer
+Experience Required: 1-3 years
+Key Skills: 
+- Python or Java programming
+- Machine learning concepts (supervised/unsupervised learning, model evaluation, feature engineering)
+- NLP, recommendation systems, or Generative AI
+- ML libraries (scikit-learn, TensorFlow, PyTorch)
+- Good problem-solving skills and attention to detail
+- Strong communication skills
+Tech Stack: 
+- Python
+- Java
+- TensorFlow
+- PyTorch
+- Hugging Face
+- scikit-learn
+CTC: Not specified
+Main Responsibilities: 
+- Support AI-driven feature development and testing
+- Implement machine learning models
+- Collect, clean, and preprocess datasets
+- Participate in experiments using AI frameworks
+- Write clean, modular, and well-documented code
+- Contribute to debugging, performance tuning, and basic model evaluation
+- Participate in Agile ceremonies
+- Research emerging AI tools and best practices
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Innoplexus
+Location           : New Delhi
+Experience         : 1-4 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://partex.ai/en/careers
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-12T13:56:15.984297
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-innoplexus-new-delhi-1-to-4-years-080426500234
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Engineer
+Experience Required: 
+Key Skills: 
+- Machine Learning
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Python
+- Java
+- C++
+- TensorFlow
+- PyTorch
+- Problem-solving
+- Teamwork
+- Communication
+Tech Stack: 
+- TensorFlow
+- PyTorch
+- Python
+- Java
+- C++
+CTC: Not specified
+Main Responsibilities: 
+- Design and develop scalable AI models
+- Collaborate with cross-functional teams
+- Develop and maintain large-scale machine learning systems
+- Implement automated testing and deployment scripts
+- Stay updated with industry trends
+=================================================================
+
+=================================================================
+Title              : AI Engineer
+Company            : Innoplexus
+Location           : Pune, New Delhi
+Experience         : 1-4 Yrs
+CTC / Salary       : Not mentioned
+Apply Type         : external
+Apply Status       : apply
+External Apply Link: https://partex.ai/en/careers
+JD Source          : LLM Summary
+Filter Status      : passed
+Role Category      : ai-engineer
+Listing Page       : 1
+Scraped At         : 2026-04-12T13:56:19.845358
+Naukri Link        : https://www.naukri.com/job-listings-ai-engineer-innoplexus-new-delhi-pune-1-to-4-years-010426504076
+
+--- Job Details (LLM-extracted) ---
+Role: AI/ML Engineer
+Experience Required: 
+Key Skills: 
+- Machine Learning
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Python
+- Java
+- C++
+- TensorFlow
+- PyTorch
+- Problem-solving
+- Teamwork
+- Communication
+Tech Stack: 
+- TensorFlow
+- PyTorch
+- Python
+- Java
+- C++
+CTC: Not specified
+Main Responsibilities: 
+- Design and develop scalable AI models
+- Collaborate with cross-functional teams
+- Develop and maintain large-scale machine learning systems
+- Implement automated testing and deployment scripts
+- Stay updated with industry trends
+=================================================================

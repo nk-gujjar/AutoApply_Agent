@@ -294,55 +294,79 @@ Duration: {profile.project_6_duration}
     # Rewrite Experience Bullets Based on JD
     # ---------------------------------------------------
 
-    async def tailor_experience(self, job_data):
+    async def generate_experiences(self, job_data, profile):
+
+        experiences = []
+        if profile.experience_1_company:
+            experiences.append({
+                "company": profile.experience_1_company,
+                "role": profile.experience_1_role or "",
+                "duration": profile.experience_1_duration or "",
+                "description": profile.experience_1_description or ""
+            })
+        if profile.experience_2_company:
+            experiences.append({
+                "company": profile.experience_2_company,
+                "role": profile.experience_2_role or "",
+                "duration": profile.experience_2_duration or "",
+                "description": profile.experience_2_description or ""
+            })
+        if profile.experience_3_company:
+            experiences.append({
+                "company": profile.experience_3_company,
+                "role": profile.experience_3_role or "",
+                "duration": profile.experience_3_duration or "",
+                "description": profile.experience_3_description or ""
+            })
+
+        if not experiences:
+            return []
+
+        exp_db_text = ""
+        for i, exp in enumerate(experiences, 1):
+            exp_db_text += f"{i}.\n"
+            exp_db_text += f"Company: {exp['company']}\n"
+            exp_db_text += f"Role: {exp['role']}\n"
+            exp_db_text += f"Duration: {exp['duration']}\n"
+            exp_db_text += f"Description: {exp['description']}\n\n"
 
         prompt = f"""
 Rewrite the following experience bullet points to align with the job description.
 
 IMPORTANT RULES:
-- Do NOT change company, role, or duration
-- Keep the original meaning
-- Expand bullets slightly to show impact
-- Highlight relevant job skills using \\textbf{{}}
-- Each bullet should be strong and ATS-optimized
-- add 3 bullet points for each experience highlighting the key achievements or responsibilities, especially those that align with the job requirements.
-- Bullet points shouldn't be short. They should be descriptive enough to convey the impact and relevance of the experience to the job.
-- Return ONLY LaTeX item lists
+- Do NOT change company, role, or duration.
+- Expand bullets slightly to show impact and relevance to the job requirements.
+- Highlight relevant job skills using \\textbf{{}}.
+- Each bullet should be strong and ATS-optimized.
+- Add exactly 3-4 bullet points for each experience highlighting the key achievements or responsibilities.
+- Bullet points should be descriptive enough to convey the impact.
+- Avoid repeating the same words.
 
-FORMAT EXACTLY:
+JSON FORMAT EXACTLY:
 
-\\resumeItemListStart
-\\item bullet
-\\item bullet
-\\resumeItemListEnd
+{{
+ "experiences":[
+   {{
+     "company":"company name",
+     "role":"role",
+     "duration":"duration",
+     "bullets":[
+       "bullet 1",
+       "bullet 2",
+       "bullet 3"
+     ]
+   }}
+ ]
+}}
 
 JOB DESCRIPTION SKILLS:
 {job_data.get("skills_required")}
 
 EXPERIENCE DATA
 
-INFOSYS:
-1. Completed advanced training in Agentic AI systems using LangChain, LangGraph, MCP and A2A frameworks.
-2. Built multi-agent workflows and RAG pipelines for document processing and knowledge retrieval.
-3. Developed backend APIs using FastAPI to support scalable AI-driven applications.
-4. Integrated Langfuse observability and Guardrails to monitor and validate LLM responses.
-
-ANNAM.AI:
-1. Built deep learning models to identify plant species and estimate growth stages from images.
-2. Used computer vision techniques for plant health monitoring and feature extraction.
-
-EASECRUIT:
-1. Developed a resume parser using Node.js and React converting resumes into structured JSON.
-2. Integrated LLMs to extract GitHub links, repositories and candidate metadata.
-3. Optimized backend pipeline to process 100+ resumes in under 15 seconds.
+{exp_db_text}
 
 Return valid JSON ONLY.
-
-{{
- "infosys":"latex bullets",
- "annam":"latex bullets",
- "easecruit":"latex bullets"
-}}
 """
 
         response = await self.llm.ainvoke(prompt)
@@ -350,17 +374,56 @@ Return valid JSON ONLY.
         try:
             content = response.content.strip()
             content = content.replace("```json", "").replace("```", "")
-            data = json.loads(response.content)
+            data = json.loads(content)
+            parsed_experiences = data.get("experiences", [])
+            
+            # Add fallback if bullets are missing or LLM failed partially
+            for orig, parsed in zip(experiences, parsed_experiences):
+                if not parsed.get("bullets"):
+                    parsed["bullets"] = [
+                        orig["description"][:100] if len(orig["description"])>100 else orig["description"],
+                        "Contributed effectively to team goals and deliverables."
+                    ]
+            return parsed_experiences
         except Exception:
-            logger.warning("Experience rewrite failed")
+            logger.warning("Experience rewrite failed, using raw description as bullet")
+            
+            # Fallback wrapper
+            fallback = []
+            for exp in experiences:
+                fallback.append({
+                    "company": exp["company"],
+                    "role": exp["role"],
+                    "duration": exp["duration"],
+                    "bullets": [exp["description"]]
+                })
+            return fallback
 
-            data = {
-                "infosys": "",
-                "annam": "",
-                "easecruit": ""
-            }
+    def build_experience_latex(self, experiences):
+        if not experiences:
+            return ""
 
-        return data
+        latex = "\\resumeSubHeadingListStart\n"
+
+        for exp in experiences:
+            company = self.escape_latex(exp.get("company", ""))
+            role = self.escape_latex(exp.get("role", ""))
+            duration = self.escape_latex(exp.get("duration", ""))
+
+            latex += f"""\\resumeSubheading
+{{{company}}}{{{duration}}}
+{{{role}}}{{}}
+\\resumeItemListStart
+"""
+
+            for bullet in exp.get("bullets", []):
+                bullet = self.escape_latex(bullet)
+                latex += f"\\resumeItem{{{bullet}}}\n"
+
+            latex += "\\resumeItemListEnd\n\n"
+
+        latex += "\\resumeSubHeadingListEnd\n"
+        return latex
 
     # ---------------------------------------------------
     # Convert project JSON → LaTeX
@@ -429,14 +492,11 @@ Return valid JSON ONLY.
     # Build CV
     # ---------------------------------------------------
 
-    def build_cv(self, template, projects_latex, skills, experience):
+    def build_cv(self, template, projects_latex, skills, experience_latex):
 
         latex = template.replace("{{PROJECTS}}", projects_latex)
         latex = latex.replace("{{SKILLS}}", skills)
-
-        latex = latex.replace("{{INFOSYS_EXPERIENCE}}", experience["infosys"])
-        latex = latex.replace("{{ANNAM_EXPERIENCE}}", experience["annam"])
-        latex = latex.replace("{{EASECRUIT_EXPERIENCE}}", experience["easecruit"])
+        latex = latex.replace("{{EXPERIENCE}}", experience_latex)
 
         return latex
 
@@ -501,11 +561,13 @@ Return valid JSON ONLY.
 
         projects_latex = self.build_projects_latex(projects_json)
 
-        experience = await self.tailor_experience(job_data)
+        experiences_json = await self.generate_experiences(job_data, profile)
+
+        experiences_latex = self.build_experience_latex(experiences_json)
 
         skills = self.generate_skills(profile)
 
-        latex = self.build_cv(template, projects_latex, skills, experience)
+        latex = self.build_cv(template, projects_latex, skills, experiences_latex)
 
         pdf = self.compile_pdf(latex)
 

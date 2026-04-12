@@ -1,0 +1,34 @@
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "give me update resume for the job which have below JD:\nLegistify: Apply for AI Engineer\nHey there! If you're curious about joining our innovative legal tech team as an AI Engineer, find the job description below.\nJob Summary:\nWe are seeking an AI Engineer to develop and implement advanced machine learning models that enhance our SaaS offerings. Your expertise in AI and data science will be vital in driving innovation and improving operational efficiency.\nKey Responsibilities:\nDesign and develop machine learning models to address business challenges and improve product features.\nCollaborate with cross-functional teams to implement AI solutions that align with our SaaS goals.\nAnalyze large datasets to extract insights and inform model development.\nOptimize and validate models to ensure performance, accuracy, and scalability.\nStay updated on industry trends and advancements in AI technologies to drive innovation.\nQualifications and Skills:\nMinimum 3-5 years of experience in AI and machine learning.\nProficiency in programming languages such as Python or R and frameworks like TensorFlow or PyTorch.\nStrong understanding of machine learning algorithms and data processing techniques.\nExperience with data visualization tools and techniques.\nFamiliarity with cloud platforms (AWS, Azure) for deploying AI solutions.\nInterview Process:\nFirst Round: Congratulations! You\u2019re already in by filling out this form.\nSecond Round: Let\u2019s discuss your AI experience and its application in SaaS products.\nThird Round: Share your approach to developing machine learning models with our data team.\nFourth Round: The moment you\u2019ve been waiting for - the Offer Letter!"
+    },
+    {
+      "type": "ai",
+      "content": "Executed two-agent resume pipeline: jd_extractor -> resume_rewrite.\nResume generated: /Users/niteshkumar/Documents/other/AutoApply_Agent/output/cv_20260412_142251.pdf"
+    }
+  ],
+  "context": {
+    "last_jd_link": "",
+    "last_jd": {
+      "title": "AI Engineer",
+      "description": "Develop and implement advanced machine learning models to enhance SaaS offerings. Drive innovation and improve operational efficiency with expertise in AI and data science.",
+      "qualifications": "Minimum 3-5 years of experience in AI and machine learning, proficiency in Python or R, TensorFlow or PyTorch, strong understanding of machine learning algorithms and data processing techniques.",
+      "skills_required": [
+        "Python",
+        "R",
+        "TensorFlow",
+        "PyTorch",
+        "Machine Learning",
+        "Data Science",
+        "Data Visualization",
+        "Cloud Platforms (AWS, Azure)",
+        "Programming",
+        "Data Processing",
+        "AI Technologies"
+      ]
+    },
+    "last_jd_source": "jd_text"
+  }
+}

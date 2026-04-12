@@ -30,6 +30,10 @@ class Config:
     # Base paths
     BASE_DIR = Path(__file__).resolve().parents[3]
     DATA_DIR = BASE_DIR / "data"
+    JOBS_DIR = DATA_DIR / "jobs"
+    DEBUG_DIR = DATA_DIR / "debug"
+    MEMORY_DIR = DATA_DIR / "memory"
+    OTHER_DIR = DATA_DIR / "other"
     LOGS_DIR = BASE_DIR / "logs"
     OUTPUT_DIR = BASE_DIR / "output"
     TEMPLATES_DIR = BASE_DIR / "templates"
@@ -75,8 +79,8 @@ class Config:
     
     # File paths
     PERSONAL_PROFILE_PATH = BASE_DIR / "personal.txt"
-    TRACKER_CSV_PATH = DATA_DIR / "tracker.csv"
-    HISTORY_TXT_PATH = DATA_DIR / "history.txt"
+    TRACKER_CSV_PATH = OTHER_DIR / "tracker.csv"
+    HISTORY_TXT_PATH = OTHER_DIR / "history.txt"
     
     @classmethod
     def validate_config(cls) -> List[str]:
@@ -98,8 +102,11 @@ class Config:
     @classmethod
     def setup_directories(cls):
         """Create necessary directories if they don't exist"""
-        for directory in [cls.DATA_DIR, cls.LOGS_DIR, cls.OUTPUT_DIR, cls.TEMPLATES_DIR]:
-            directory.mkdir(exist_ok=True)
+        for directory in [
+            cls.DATA_DIR, cls.JOBS_DIR, cls.DEBUG_DIR, cls.MEMORY_DIR, cls.OTHER_DIR,
+            cls.LOGS_DIR, cls.OUTPUT_DIR, cls.TEMPLATES_DIR
+        ]:
+            directory.mkdir(parents=True, exist_ok=True)
     
     @classmethod
     def setup_logging(cls):
