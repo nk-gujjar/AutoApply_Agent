@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import asdict
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -157,6 +157,11 @@ class ClientAgent:
         filters: Dict[str, Any] | None = None,
         use_mcp: bool = False,
     ) -> Dict[str, Any]:
+        """Run the Easy Apply pipeline: fetch → rewrite → apply (Easy Apply only)."""
+        logger.info("━" * 55)
+        logger.info("  🚀 Pipeline: fetch_jobs → resume_rewrite → naukri_applier (Easy Apply)")
+        logger.info("━" * 55)
+
         fetch_result = await self.route(
             "fetch_jobs",
             {
@@ -167,11 +172,15 @@ class ClientAgent:
         )
 
         if not fetch_result.get("ok"):
+            logger.error("  ❌ Pipeline failed at fetch_jobs stage")
             return {"status": "failed", "stage": "fetch_jobs", "error": fetch_result.get("error")}
 
         jobs = fetch_result["result"]["data"].get("jobs", [])
         if not jobs:
+            logger.info("  ℹ️  No jobs found, pipeline complete")
             return {"status": "no_jobs", "jobs": 0}
+
+        logger.info(f"  📋 Fetched {len(jobs)} jobs, proceeding to resume rewrite...")
 
         rewrite_result = await self.route(
             "resume_rewrite",
@@ -179,24 +188,25 @@ class ClientAgent:
             use_mcp=use_mcp,
         )
 
+        logger.info(f"  📄 Resume rewrite complete, proceeding to Easy Apply...")
+
         naukri_apply_result = await self.route(
             "naukri_applier",
             {"jobs": jobs},
             use_mcp=use_mcp,
         )
 
-        external_apply_result = await self.route(
-            "external_applier",
-            {"dry_run": False},
-            use_mcp=use_mcp,
-        )
+        # Build summary
+        apply_summary = self._format_apply_summary(naukri_apply_result)
+
+        logger.info("  ✅ Pipeline complete")
 
         return {
             "status": "completed",
             "jobs_fetched": len(jobs),
             "resume_rewrite": rewrite_result,
             "naukri_apply": naukri_apply_result,
-            "external_apply": external_apply_result,
+            "summary": apply_summary,
         }
 
     def _build_agent_payload(self, agent_name: str, intent: ParsedIntent) -> Dict[str, Any]:
@@ -335,6 +345,11 @@ class ClientAgent:
         response = f"Executed agent: {target_agent}."
         fetch_details: Dict[str, Any] | None = None
         jd_details: Dict[str, Any] | None = None
+
+        # Format summary for naukri_applier
+        if target_agent == "naukri_applier" and ok:
+            response = self._format_apply_summary(result)
+
         if target_agent == "fetch_jobs" and ok:
             jobs = self._extract_jobs(result)
             source = result.get("result", {}).get("data", {}).get("source", "unknown")
@@ -417,20 +432,52 @@ class ClientAgent:
             output["fetch_details"] = fetch_details
         if jd_details is not None:
             output["jd_details"] = jd_details
+
+        logger.info(f"  ✅ Agent '{target_agent}' completed: {'ok' if ok else 'failed'}")
         return output
 
-    async def handle_query(self, query: str) -> Dict[str, Any]:
+    def _format_apply_summary(self, apply_result: Dict[str, Any]) -> str:
+        """Format a human-readable apply summary from naukri_applier result."""
+        result_data = apply_result.get("result", {}).get("data", {})
+        summary_text = result_data.get("summary_text")
+        if summary_text:
+            return summary_text
+
+        summary = result_data.get("summary", {})
+        if isinstance(summary, dict):
+            return (
+                f"✅ Application Summary\n"
+                f"━━━━━━━━━━━━━━━━━━━━━\n"
+                f"Applied:            {summary.get('applied', 0)}\n"
+                f"Already Applied:    {summary.get('already_applied', 0)}\n"
+                f"Skipped (External): {summary.get('skipped_external', 0)}\n"
+                f"Skipped (Blocked):  {summary.get('skipped_blocked', 0)}\n"
+                f"Failed:             {summary.get('failed', 0)}\n"
+                f"━━━━━━━━━━━━━━━━━━━━━\n"
+                f"Total Processed:    {summary.get('total', 0)}"
+            )
+        return "Application process completed."
+
+    async def handle_query(
+        self,
+        query: str,
+        chat_history: Optional[List[Dict[str, str]]] = None,
+    ) -> Dict[str, Any]:
         """
-        Handle user query using LLM-based intent parsing.
+        Handle user query using LLM-based intent parsing with conversation context.
         
-        The LLM intelligently decides:
-        - Which agent(s) to call
-        - What parameters to use
-        - How to format the response
-        - Whether to call multiple agents in sequence
+        Args:
+            query: The user's natural language query
+            chat_history: Recent messages for context-aware intent resolution
         """
         q = (query or "").strip()
         correlation_id = self.a2a.new_correlation_id()
+
+        logger.info("")
+        logger.info("═" * 55)
+        logger.info(f"  📩 New query: \"{q[:100]}{'...' if len(q) > 100 else ''}\"")
+        logger.info(f"  🔗 Correlation: {correlation_id[:12]}...")
+        logger.info("═" * 55)
 
         if not q:
             return {
@@ -442,9 +489,9 @@ class ClientAgent:
 
         try:
             # Use LLM to parse intent and extract parameters
-            intent = await self.llm_router.parse_intent(q)
+            intent = await self.llm_router.parse_intent(q, chat_history=chat_history)
             logger.info(
-                "Parsed intent: %s (confidence: %.2f) - reasoning: %s",
+                "  🎯 Parsed intent: %s (confidence: %.2f) - reasoning: %s",
                 intent.primary_intent,
                 intent.confidence,
                 intent.reasoning,
@@ -456,6 +503,7 @@ class ClientAgent:
                 and "resume_rewrite" in self.agents
                 and RESUME_PIPELINE_PATTERN.search(q)
             ):
+                logger.info("  🔄 Fallback override: resume keywords detected, forcing resume pipeline")
                 forced_intent = ParsedIntent(
                     primary_intent="jd_extractor",
                     agents_to_call=["jd_extractor", "resume_rewrite"],
@@ -466,18 +514,22 @@ class ClientAgent:
                 return await self._run_resume_with_jd_extraction(q, correlation_id, forced_intent)
 
             if intent.primary_intent == "llm_only" or not intent.agents_to_call:
+                logger.info("  💬 Routing to LLM-only response")
                 return await self._handle_llm_only(q, correlation_id, intent)
 
             if "resume_rewrite" in intent.agents_to_call and "jd_extractor" in self.agents:
+                logger.info("  📄 Routing to resume pipeline (jd_extractor → resume_rewrite)")
                 return await self._run_resume_with_jd_extraction(q, correlation_id, intent)
 
             if len(intent.agents_to_call) > 1:
+                logger.info(f"  🔗 Routing to multi-agent flow: {intent.agents_to_call}")
                 return await self._handle_multi_agent_flow(q, correlation_id, intent)
 
+            logger.info(f"  🤖 Routing to single agent: {intent.agents_to_call[0]}")
             return await self._run_single_agent_from_intent(q, correlation_id, intent)
 
         except Exception as exc:
-            logger.exception("Error handling query: %s", exc)
+            logger.exception("  ❌ Error handling query: %s", exc)
             return {
                 "status": "failed",
                 "response": "An error occurred while processing your query. Please try again.",

@@ -47,9 +47,9 @@ def result_to_text(result: Dict[str, Any]) -> str:
     
     output = response_text
     if resume_url:
-        output += "\n\nResume generated successfully. Use the buttons below to view or download it."
+        output += "\n\n📄 Resume generated successfully. Use the buttons below to view or download it."
     if error_text:
-        output += f"\n\nError: {error_text}"
+        output += f"\n\n⚠️ Error: {error_text}"
     
     return output
 
@@ -61,16 +61,21 @@ def result_to_debug_text(result: Dict[str, Any]) -> str:
 
 
 st.set_page_config(page_title="AutoApply Chatbot", layout="centered")
-st.title("AutoApply Chatbot")
-st.caption("Simple chat UI for AutoApply backend with one-turn memory")
+st.title("🚀 AutoApply Chatbot")
+st.caption("AI-powered job automation — Easy Apply, resume tailoring, and more")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
             "content": (
-                "Hi. Ask anything related to jobs, resume rewriting, or applications. "
-                "Use Debug Mode if you want technical details."
+                "👋 Hi! I'm your AutoApply assistant. Here's what I can do:\n\n"
+                "• **Find jobs** — \"Fetch 5 Python developer jobs\"\n"
+                "• **Tailor resume** — \"Rewrite my resume for this JD: [url]\"\n"
+                "• **Easy Apply** — \"Apply to jobs\" (Naukri Easy Apply only)\n"
+                "• **Scrape Telegram** — \"Get jobs from @pythonJobs\"\n"
+                "• **Memory** — \"Tell me my last query\" / \"Show last conversation\"\n\n"
+                "Use **Debug Mode** in the sidebar for technical details."
             ),
         }
     ]
@@ -80,6 +85,9 @@ if "chat_session_id" not in st.session_state:
 
 with st.sidebar:
     debug_mode = st.toggle("Debug Mode", value=False)
+    st.markdown("---")
+    st.markdown("**Session ID**")
+    st.code(st.session_state.chat_session_id[:12] + "...", language=None)
 
 backend_url = "http://127.0.0.1:8000"
 
@@ -111,12 +119,12 @@ if query:
             if not debug_mode and result.get("resume_download_url"):
                 resume_url = f"{backend_url.rstrip('/')}{result['resume_download_url']}"
                 resume_name = result.get("resume_file_name", "tailored_resume.pdf")
-                st.link_button("View Resume", resume_url)
+                st.link_button("📄 View Resume", resume_url)
                 try:
                     resume_resp = httpx.get(resume_url, timeout=60)
                     resume_resp.raise_for_status()
                     st.download_button(
-                        label="Download Resume",
+                        label="⬇️ Download Resume",
                         data=resume_resp.content,
                         file_name=resume_name,
                         mime="application/pdf",

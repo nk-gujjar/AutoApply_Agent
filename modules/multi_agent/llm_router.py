@@ -6,7 +6,7 @@ import asyncio
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from modules.core.config.settings import logger, create_llm
 
@@ -29,27 +29,50 @@ class LLMRouter:
         self.routing_manifest = routing_manifest
         self.agents = list(routing_manifest.keys())
     
-    async def parse_intent(self, query: str) -> ParsedIntent:
+    async def parse_intent(
+        self,
+        query: str,
+        chat_history: Optional[List[Dict[str, str]]] = None,
+    ) -> ParsedIntent:
         """
         Use LLM to understand user intent and extract parameters.
+        
+        Args:
+            query: The user's current query
+            chat_history: Recent messages as [{"role": "human"|"ai", "content": "..."}]
         
         Returns:
             ParsedIntent with detected intent, agents to call, and extracted parameters
         """
         try:
+            logger.info("━" * 55)
+            logger.info("  🧠 LLM Router — Parsing intent")
+            logger.info(f"  📝 Query: \"{query[:120]}{'...' if len(query) > 120 else ''}\"")
+            if chat_history:
+                logger.info(f"  💬 Chat history: {len(chat_history)} messages provided")
+            
             # Create a structured prompt for the LLM
-            prompt = self._create_routing_prompt(query)
+            prompt = self._create_routing_prompt(query, chat_history)
             
             # Run LLM in thread pool to avoid blocking event loop
             response = await asyncio.to_thread(self.llm.invoke, prompt)
             response_text = response.content if hasattr(response, 'content') else str(response)
             
+            logger.info(f"  📨 LLM raw response: {response_text[:200]}{'...' if len(response_text) > 200 else ''}")
+            
             # Parse LLM response
             parsed = self._parse_llm_response(response_text, query)
+            
+            logger.info(f"  🎯 Intent: {parsed.primary_intent} (confidence: {parsed.confidence:.2f})")
+            logger.info(f"  🤖 Agents: {parsed.agents_to_call}")
+            logger.info(f"  📦 Params: {parsed.parameters}")
+            logger.info(f"  💡 Reason: {parsed.reasoning}")
+            logger.info("━" * 55)
+            
             return parsed
             
         except Exception as exc:
-            logger.exception("LLM intent parsing failed: %s", exc)
+            logger.exception("  ❌ LLM intent parsing failed: %s", exc)
             # Fallback: return llm_only intent
             return ParsedIntent(
                 primary_intent="llm_only",
@@ -59,7 +82,11 @@ class LLMRouter:
                 reasoning=f"Failed to parse intent: {str(exc)}",
             )
     
-    def _create_routing_prompt(self, query: str) -> str:
+    def _create_routing_prompt(
+        self,
+        query: str,
+        chat_history: Optional[List[Dict[str, str]]] = None,
+    ) -> str:
         """Create a structured prompt for LLM to parse intent."""
         agent_profiles = {
             agent: {
@@ -72,10 +99,24 @@ class LLMRouter:
         }
         agent_ids = "|".join(self.agents)
 
+        # Build chat history section
+        history_section = ""
+        if chat_history:
+            history_lines = []
+            for msg in chat_history:
+                role = "User" if msg.get("role") == "human" else "Assistant"
+                content = str(msg.get("content", ""))[:300]
+                history_lines.append(f"  {role}: {content}")
+            history_section = (
+                "\n\nRecent Conversation Context (use this to resolve references like 'those', 'them', 'it', 'apply to those'):\n"
+                + "\n".join(history_lines)
+            )
+
         return f"""You are an intelligent job automation assistant router. Analyze the user's query and determine:
 1. The primary intent ({agent_ids} or llm_only)
 2. Any parameters needed (max_jobs, filters, etc.)
 3. If multiple agents should be called in sequence
+{history_section}
 
 Available agents and capabilities:
 {json.dumps(agent_profiles, indent=2)}
@@ -106,7 +147,9 @@ IMPORTANT RULES:
 - Parameters should match selected agents' capabilities and can be omitted when not needed.
 - "Apply pipeline" or "full automation" can use multiple agents in logical order.
 - Resume tailoring requests should prefer `jd_extractor` then `resume_rewrite`.
+- When the user says "apply", "apply to jobs", or "auto apply", use `naukri_applier` (Easy Apply only). Do NOT use `external_applier` unless the user explicitly says "external apply" or "company site apply".
 - Tolerate typos and infer intent from semantics, not grammar.
+- Use conversation history to resolve pronouns and references (e.g., "apply to those" means apply to previously fetched jobs).
 - If unsure, choose `llm_only`.
 - Always respond with valid JSON only, no extra text"""
     
@@ -116,7 +159,7 @@ IMPORTANT RULES:
             # Try to extract JSON from response
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             if not json_match:
-                logger.warning("No JSON found in LLM response, falling back to llm_only")
+                logger.warning("  ⚠️  No JSON found in LLM response, falling back to keyword matching")
                 return self._fallback_intent(query)
             
             json_str = json_match.group(0)
@@ -131,6 +174,7 @@ IMPORTANT RULES:
             
             # Validate intent
             if intent not in [*self.agents, "llm_only"]:
+                logger.info(f"  ⚠️  Unknown intent '{intent}', defaulting to llm_only")
                 intent = "llm_only"
 
             agents = [agent for agent in agents if agent in self.agents]
@@ -149,7 +193,7 @@ IMPORTANT RULES:
             )
             
         except (json.JSONDecodeError, TypeError, ValueError) as exc:
-            logger.warning("Failed to parse LLM JSON response: %s", exc)
+            logger.warning("  ⚠️  Failed to parse LLM JSON response: %s", exc)
             return self._fallback_intent(query)
     
     def _clean_parameters(self, intent: str, agents: list[str], params: Dict[str, Any]) -> Dict[str, Any]:
@@ -200,15 +244,17 @@ IMPORTANT RULES:
     def _fallback_intent(self, query: str) -> ParsedIntent:
         """Fallback intent detection using keyword matching."""
         q = (query or "").strip().lower()
+        logger.info("  🔄 Using keyword-based fallback intent detection")
         
         # Check for full pipeline
         if any(key in q for key in ["full", "pipeline", "all agents", "end to end", "complete automation"]):
             pipeline_agents = [
                 agent
-                for agent in ["fetch_jobs", "resume_rewrite", "naukri_applier", "external_applier"]
+                for agent in ["fetch_jobs", "resume_rewrite", "naukri_applier"]
                 if agent in self.agents
             ]
             primary = pipeline_agents[0] if pipeline_agents else "llm_only"
+            logger.info(f"  🔄 Fallback: full pipeline detected → {pipeline_agents}")
             return ParsedIntent(
                 primary_intent=primary,
                 agents_to_call=pipeline_agents,
@@ -226,6 +272,7 @@ IMPORTANT RULES:
                     params["max_jobs"] = self._extract_max_jobs_fallback(q)
 
                 if agent == "resume_rewrite" and "jd_extractor" in self.agents:
+                    logger.info(f"  🔄 Fallback: resume keywords → jd_extractor + resume_rewrite pipeline")
                     return ParsedIntent(
                         primary_intent="jd_extractor",
                         agents_to_call=["jd_extractor", "resume_rewrite"],
@@ -234,6 +281,7 @@ IMPORTANT RULES:
                         reasoning="Resume tailoring query mapped to jd_extractor -> resume_rewrite pipeline",
                     )
 
+                logger.info(f"  🔄 Fallback: matched hint for agent '{agent}'")
                 return ParsedIntent(
                     primary_intent=agent,
                     agents_to_call=[agent],
@@ -243,6 +291,7 @@ IMPORTANT RULES:
                 )
         
         # Default: LLM only for general queries
+        logger.info("  🔄 Fallback: no agent matched, using llm_only")
         return ParsedIntent(
             primary_intent="llm_only",
             agents_to_call=[],
@@ -270,3 +319,4 @@ IMPORTANT RULES:
                     pass
         
         return 5  # Default
+

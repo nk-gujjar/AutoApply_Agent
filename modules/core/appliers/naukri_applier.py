@@ -55,10 +55,10 @@ class NaukriApplier:
         self.email         = email
         self.password      = password
         self.login_url     = "https://www.naukri.com/nlogin/login"
-        self.applied_file  = Path("./data/applied_jobs.txt")
-        self.failed_file   = Path("./data/failed_jobs.txt")
-        self.external_file = Path("./data/external_jobs.txt")
-        self.skipped_file  = Path("./data/skipped_jobs.txt")
+        self.applied_file  = config.DATA_DIR / "applied_jobs.txt"
+        self.failed_file   = config.DATA_DIR / "failed_jobs.txt"
+        self.external_file = config.DATA_DIR / "external_jobs.txt"
+        self.skipped_file  = config.DATA_DIR / "skipped_jobs.txt"
 
         self.llm = create_llm(temperature=0)
 
@@ -563,7 +563,7 @@ Answer:"""
                 await page.screenshot(path=f"./data/debug_{self._safe_name(job['company'])}.png")
                 return "failed", REASON_NO_APPLY_BTN
 
-            # ── Watch for external tab ──
+            # ── Watch for external tab (Easy Apply only — skip external redirects) ──
             new_page_opened = False
             new_page_ref    = None
 
@@ -578,9 +578,10 @@ Answer:"""
             context.remove_listener("page", handle_new_page)
 
             if new_page_opened and new_page_ref:
-                logger.info(f"External → {new_page_ref.url}")
+                logger.info(f"⏭️  External redirect detected → {new_page_ref.url}")
+                logger.info(f"⏭️  Skipping (Easy Apply only mode)")
                 await new_page_ref.close()
-                return "external", REASON_EXTERNAL
+                return "skipped", REASON_EXTERNAL
 
             # ── Chatbot ──
             if await page.locator("div.chatbot_MessageContainer").count() > 0:
@@ -639,10 +640,21 @@ Answer:"""
 
     # ------------------------------------------------ #
 
-    async def run(self, jobs: list):
+    async def run(self, jobs: list) -> dict:
+        """Run Easy Apply on jobs and return a summary dict."""
 
         for path in [self.applied_file, self.failed_file, self.external_file, self.skipped_file]:
             path.parent.mkdir(parents=True, exist_ok=True)
+
+        summary = {
+            "applied": 0,
+            "already_applied": 0,
+            "skipped_external": 0,
+            "skipped_blocked": 0,
+            "failed": 0,
+            "total": 0,
+            "details": [],
+        }
 
         # Deduplicate
         seen, unique_jobs = set(), []
@@ -651,18 +663,25 @@ Answer:"""
                 seen.add(job["link"])
                 unique_jobs.append(job)
             else:
-                logger.info(f"Duplicate skipped: {job['title']} @ {job['company']}")
+                logger.info(f"  ↳ Duplicate skipped: {job['title']} @ {job['company']}")
 
         # Filter blocked
         filtered = []
         for job in unique_jobs:
             if self.is_blocked(job.get("company", "")):
-                logger.info(f"Skipping blocked: {job['company']}")
+                logger.info(f"  ⛔ Blocked company skipped: {job['company']}")
                 await self.log_result(job, "skipped", "blocked_company")
+                summary["skipped_blocked"] += 1
+                summary["details"].append({"title": job.get("title"), "company": job.get("company"), "status": "skipped", "reason": "blocked_company"})
             else:
                 filtered.append(job)
 
-        logger.info(f"{len(filtered)} unique jobs to process.")
+        summary["total"] = len(filtered) + summary["skipped_blocked"]
+
+        logger.info("")
+        logger.info("━" * 55)
+        logger.info(f"  🚀 Easy Apply — {len(filtered)} jobs to process")
+        logger.info("━" * 55)
 
         async with async_playwright() as p:
 
@@ -677,19 +696,56 @@ Answer:"""
             await page.close()
 
             for i, job in enumerate(filtered):
-                logger.info(f"--- Job {i+1}/{len(filtered)}: {job['title']} @ {job['company']} ---")
+                progress = f"[{i+1}/{len(filtered)}]"
+                logger.info(f"")
+                logger.info(f"  {progress} 📋 {job['title']} @ {job['company']}")
+                logger.info(f"  {' ' * len(progress)} 🔗 {job['link'][:80]}...")
+
                 status, reason = await self.apply_to_job(context, job)
                 await self.log_result(job, status, reason)
-                logger.info(f"Result: [{status.upper()}] | {reason}")
+
+                # Track results
+                detail = {"title": job.get("title"), "company": job.get("company"), "status": status, "reason": reason}
+                summary["details"].append(detail)
+
+                if status == "applied":
+                    summary["applied"] += 1
+                    logger.info(f"  {' ' * len(progress)} ✅ Applied successfully")
+                elif status == "already_applied":
+                    summary["already_applied"] += 1
+                    logger.info(f"  {' ' * len(progress)} ℹ️  Already applied")
+                elif status == "skipped" and reason == REASON_EXTERNAL:
+                    summary["skipped_external"] += 1
+                    logger.info(f"  {' ' * len(progress)} ⏭️  Skipped (External — Easy Apply only)")
+                elif status == "failed":
+                    summary["failed"] += 1
+                    logger.info(f"  {' ' * len(progress)} ❌ Failed: {reason}")
+                else:
+                    summary["failed"] += 1
+                    logger.info(f"  {' ' * len(progress)} ⚠️  {status}: {reason}")
+
                 await asyncio.sleep(3)
 
             await browser.close()
 
-        logger.info("Done.")
-        logger.info(f"Applied  → {self.applied_file}")
-        logger.info(f"External → {self.external_file}")
-        logger.info(f"Failed   → {self.failed_file}")
-        logger.info(f"Skipped  → {self.skipped_file}")
+        # Print final summary to terminal
+        logger.info("")
+        logger.info("━" * 55)
+        logger.info("  📊 Application Summary")
+        logger.info("━" * 55)
+        logger.info(f"  ✅ Applied:            {summary['applied']}")
+        logger.info(f"  ℹ️  Already Applied:    {summary['already_applied']}")
+        logger.info(f"  ⏭️  Skipped (External): {summary['skipped_external']}")
+        logger.info(f"  ⛔ Skipped (Blocked):  {summary['skipped_blocked']}")
+        logger.info(f"  ❌ Failed:             {summary['failed']}")
+        logger.info(f"  ───────────────────────")
+        logger.info(f"  📦 Total Processed:    {summary['total']}")
+        logger.info("━" * 55)
+        logger.info(f"  Logs → {self.applied_file}")
+        logger.info(f"         {self.failed_file}")
+        logger.info("━" * 55)
+
+        return summary
 
 
 # ------------------------------------------------ #

@@ -1,0 +1,29 @@
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "https://paypal.eightfold.ai/careers?domain=paypal.com&query=R0135741&start=0&location=Bengaluru%2C+Karnataka%2C+IN&pid=274918959165&sort_by=relevance&filter_distance=80&filter_include_remote=1\n\n\nfor the JD in the above link, tailored my resume and give me the pdf"
+    },
+    {
+      "type": "ai",
+      "content": "Executed two-agent resume pipeline: jd_extractor -> resume_rewrite.\nResume generated: /Users/niteshkumar/Documents/other/AutoApply_Agent/output/cv_20260406_233022.pdf"
+    }
+  ],
+  "context": {
+    "last_jd_link": "https://paypal.eightfold.ai/careers?domain=paypal.com&query=R0135741&start=0&location=Bengaluru%2C+Karnataka%2C+IN&pid=274918959165&sort_by=relevance&filter_distance=80&filter_include_remote=1",
+    "last_jd": {
+      "title": "Machine Learning Engineer",
+      "description": "The Company PayPal has been revolutionizing commerce globally for more than 25 years. Creating innovative experiences that make moving money, selling, and shopping simple, personalized, and secure, PayPal empowers consumers and businesses in approximately 200 markets to join and thrive in the global economy. We operate a global, two-sided network at scale that connects hundreds of millions of merchants and consumers. We help merchants and consumers connect, transact, and complete payments, whether they are online or in person. PayPal is more than a connection to third-party payment networks. We provide proprietary payment solutions accepted by merchants that enable the completion of payments on our platform on behalf of our customers. We offer our customers the flexibility to use their accounts to purchase and receive payments for goods and services, as well as the ability to transfer and withdraw funds. We enable consumers to exchange funds more safely with merchants using a variety of funding sources, which may include a bank account, a PayPal or Venmo account balance, PayPal and Venmo branded credit products, a credit card, a debit card, certain cryptocurrencies, or other stored value products such as gift cards, and eligible credit card rewards. Our PayPal, Venmo, and Xoom products also make it safer and simpler for friends and family to transfer funds to each other. We offer merchants an end-to-end payments solution that provides authorization and settlement capabilities, as well as instant access to funds and payouts. We also help merchants connect with their customers, process exchanges and returns, and manage risk. We enable consumers to engage in cross-border shopping and merchants to extend their global reach while reducing the complexity and friction involved in enabling cross-border trade. Our beliefs are the foundation for how we conduct business every day. We live each day guided by our core values of Inclusion, Innovation, Collaboration, and Wellness. Together, our values ensure that we work together as one global team with our customers at the center of everything we do \u2013 and they push us to ensure we take care of ourselves, each other, and our c",
+      "qualifications": "",
+      "skills_required": [
+        "Azure",
+        "Python",
+        "CI/CD",
+        "LLM",
+        "Prompt Engineering",
+        "Fastapi"
+      ]
+    },
+    "last_jd_source": "url_structured"
+  }
+}

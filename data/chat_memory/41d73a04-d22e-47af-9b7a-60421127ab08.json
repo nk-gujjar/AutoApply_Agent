@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "apply 5 jobs on naukri.com"
+    },
+    {
+      "type": "ai",
+      "content": "\ud83d\udd04 Executed multi-agent pipeline: naukri_scraper, naukri_applier"
+    }
+  ],
+  "context": {
+    "last_jd_link": "",
+    "last_jd": {},
+    "last_jd_source": ""
+  }
+}

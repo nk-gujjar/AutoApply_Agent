@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, List
 from uuid import uuid4
@@ -11,6 +12,8 @@ from pydantic import BaseModel, Field
 
 from .agent_catalog import get_agent_card_profiles
 from .models import A2AConversationResult
+
+logger = logging.getLogger(__name__)
 
 DispatchCallable = Callable[[str, Dict[str, Any], bool], Awaitable[Dict[str, Any]]]
 
@@ -267,6 +270,8 @@ class A2ACoordinator:
             "role": "ROLE_USER",
         }
 
+        logger.info(f"  📤 A2A dispatch: {sender} → {agent_name} (intent: {intent})")
+
         if use_mcp and self.dispatcher:
             result = await self.dispatcher(agent_name, payload, use_mcp)
             return {"message": message, "result": result}
@@ -288,6 +293,7 @@ class A2ACoordinator:
                 metadata={**payload, "correlation_id": correlation_id, "sender": sender},
                 context_id=correlation_id,
             )
+            logger.info(f"  📨 A2A response received from '{agent_name}'")
         except Exception as exc:
             return {
                 "message": message,
@@ -340,7 +346,10 @@ class A2ACoordinator:
         steps: List[Dict[str, Any]] = []
         aggregate: Dict[str, Any] = {}
 
-        for item in sequence:
+        logger.info(f"  🔗 A2A sequence: {[item['agent'] for item in sequence]}")
+
+        for idx, item in enumerate(sequence):
+            logger.info(f"  🔗 Sequence step [{idx+1}/{len(sequence)}]: {item['agent']}")
             step = await self.ask_agent(
                 sender="client_agent",
                 agent_name=item["agent"],
@@ -353,6 +362,7 @@ class A2ACoordinator:
             aggregate[item["agent"]] = step.get("result")
 
             if not step.get("result", {}).get("ok", True):
+                logger.warning(f"  ❌ Sequence failed at step '{item['agent']}'")
                 return A2AConversationResult(
                     status="failed",
                     query=query,
@@ -362,6 +372,7 @@ class A2ACoordinator:
                     correlation_id=correlation_id,
                 )
 
+        logger.info(f"  ✅ A2A sequence completed successfully")
         return A2AConversationResult(
             status="ok",
             query=query,
